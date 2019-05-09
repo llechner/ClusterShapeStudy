@@ -2,6 +2,7 @@
 #include <vector>
 #include <list>
 #include <string>
+#include <experimental/filesystem>
 #include <dirent.h>
 #include "Math/SMatrix.h"
 #include "Math/SVector.h"
@@ -71,8 +72,20 @@ int main(){
 
 	// const char *path="/eos/cms/store/group/dpg_tracker_strip/comm_tracker/Strip/Calibration/calibrationtree/GR17_Aag/";
 	//string filename="/eos/cms/store/group/dpg_tracker_strip/comm_tracker/Strip/Calibration/calibrationtree/GR17_Aag/calibTree_304777_25.root";
-	string filename="/afs/cern.ch/work/l/llechner/public/CMSSW_9_4_4/src/cmssw/ClusterShape/data/merged_1.root";
-	string outfilename="/afs/cern.ch/work/l/llechner/public/CMSSW_9_4_4/src/cmssw/ClusterShape/data/resutls.root";
+	const string filename="data/merged_1.root";
+	const string outfilename="data/results.root";
+
+	const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v3/";
+
+    try{
+        std::experimental::filesystem::create_directory(plotDir);
+    } catch (...){
+    }
+
+    try{
+        std::experimental::filesystem::copy("data/index.php",plotDir.c_str());
+    } catch (...){
+    }
 
 	TFile* ifile=TFile::Open(filename.c_str());
 	TTree* tree=(TTree*) ifile->Get("testTree/tree");
@@ -364,61 +377,52 @@ int main(){
 			if(clusterOverlapping->at(c)==0 && clusterFarfromedge->at(c)==1 && clusterSaturation->at(c)==0){
 
 				ObsCW=clusterWidth->at(c);
-				ExpCW=abs((tan(0.02)+cos(clusterLocalTrackPhi->at(c))*tan(clusterLocalTrackTheta->at(c)))*clusterSensorThickness->at(c)/clusterLocalpitch->at(c)); //We'll need Lorentz angle Theta_L 
+				ExpCW=abs((tan(0.02)+cos(clusterLocalTrackPhi->at(c))*tan(clusterLocalTrackTheta->at(c)))*clusterSensorThickness->at(c)/clusterLocalpitch->at(c)); //We'll need Lorentz angle Theta_L
 				Idx=clusterIdx->at(c);
 
 				for(unsigned int z=0;z<clusterStripIdx->size();z++){
 					if(clusterStripIdx->at(z) == Idx){
-						q.push_back(clusterAmplitudes->at(z)); 
+						q.push_back(clusterAmplitudes->at(z));
 					}
 				}
 
 				ObsCharge=Sum(q);
-
 				double s1b=UncertaintyCrossTalk(x0,s0,x1,x2);
-
 				QUnfold=Unfold(q,x0,x1,x2);
-
 				UnfoldCharge=Sum(QUnfold);
-
 				QUnfold_M=Unfold(q,x0+s0,x1+s1b,x2);
-
 				QUnfold_P=Unfold(q,x0-s0,x1-s1b-2*s0,x2);
 
-				double x0prob=r->Gaus(x0,2*s0); //cout<<"x0 : "<<x0<<endl;
+				double x0prob=r->Gaus(x0,2*s0);
+				double x1prob=r->Gaus(x1,2*s1);
+				double x2prob=(double)(1-2*x1-x0)/2.;
 
-				double x1prob=r->Gaus(x1,2*s1); //cout<<"x1 : "<<x1<<endl;
-
-				double x2prob=(double)(1-2*x1-x0)/2.; //cout<<"x2 : "<<x2<<endl;
-
-				QUnfoldProb=Unfold(q,x0prob,x1prob,x2prob); //for(unsigned int i=0;i<QUnfoldProb.size();i++) cout<<"Q : "<<QUnfoldProb[i]<<endl; getchar();
-
+				QUnfoldProb=Unfold(q,x0prob,x1prob,x2prob);
 				Cluster=Cutting(Threshold(QUnfold,clusterThreshold));
 
 				if(Cluster.size()==0) cerr<<"Warning"<<"\tEvent "<<i<<"\tCluster"<<c<<endl;
 				else UnderCluster=SelectionAfterCutting(Cluster);
 
-				for(unsigned int i=0;i<Cluster.size();i++){ //UnfoldClusterWidth
+				for(unsigned int i=0;i<Cluster.size();i++){
 					UnfoldCW += Cluster[i].size();
 				}
 
 				double k=Cluster.size();
 				if (k>1 && k<10) UnfoldCW+=k-1;
-//				for(unsigned int k=2;k<10;k++){
-//					if(Cluster.size()==k) UnfoldCW+=(k-1);
-//				}
 
 				QStrip=funcQStrip(UnderCluster,clusterPath,c);
 
-				RecCW=TotalClusterWidth(UnderCluster,QStrip)[1][0];
-				RecCharge=TotalClusterWidth(UnderCluster,QStrip)[1][1];
+                std::vector<std::vector<double>> TotalClusterWidthVec=TotalClusterWidth(UnderCluster,QStrip);
+				RecCW=TotalClusterWidthVec[1][0];
+				RecCharge=TotalClusterWidthVec[1][1];
 
 				UncertQS=UncertQStrip10;
 
-				RecSelCW=TotalClusterWidthAfterTreatment(QUnfold,UncertQS,clusterPath,c,clusterThreshold)[0];
+                std::vector<double> TotalClusterWidthAfterTreatVec=TotalClusterWidthAfterTreatment(QUnfold,UncertQS,clusterPath,c,clusterThreshold);
+				RecSelCW=TotalClusterWidthAfterTreatVec[0];
+				RecSelCharge=TotalClusterWidthAfterTreatVec[1];
 				RecSelCWUncert_P=TotalClusterWidthAfterTreatment(QUnfold_P,UncertQS,clusterPath,c,clusterThreshold)[0];
 				RecSelCWUncert_M=TotalClusterWidthAfterTreatment(QUnfold_M,UncertQS,clusterPath,c,clusterThreshold)[0];
-				RecSelCharge=TotalClusterWidthAfterTreatment(QUnfold,UncertQS,clusterPath,c,clusterThreshold)[1];
 
 				RelDiffObs=(double)(ObsCW-ExpCW)/ExpCW;
 				RelDiffRec=(double)(RecCW-ExpCW)/ExpCW;
@@ -458,8 +462,6 @@ int main(){
 				}
 
 				vector<double> ClusterSel=ClusterizationWithNoise(UnderCluster,QStrip,UncertQS);
-
-// new?
 
 				if(ObsCW ==8 && ExpCW <= 2 && RecSelCW <= 2){
 					pObsCluster->SetBins(q.size()+2,0,q.size()+2);
@@ -507,30 +509,23 @@ int main(){
 					legend->AddEntry(pObsCluster,"Observed","l");
 					legend->AddEntry(pUnfoldCluster,"Unfold","l");
 					legend->Draw("SAME");
-//					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.pdf");
-//					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.png");
 					c4->cd(2);
 					pUnfoldCluster->GetXaxis()->SetTitle("Strip");
 					pUnfoldCluster->GetYaxis()->SetTitle("Charge");
 					pUnfoldCluster->Draw();
-//					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.pdf");
-//					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.png");
 					c4->cd(3);
 					pUnderCluster->GetXaxis()->SetTitle("Strip");
 					pUnderCluster->GetYaxis()->SetTitle("Charge");
 					pUnderCluster->Draw();
 					ligneQStrip->SetLineColor(1);
 					ligneQStrip->SetLineStyle(7);
-					// if(UnderCluster.size()>=4) 
 					ligneQStrip->Draw("SAME");
-//					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.pdf");
-//					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.png");
 					c4->cd(4);
 					pClusterSel->GetXaxis()->SetTitle("Strip");
 					pClusterSel->GetYaxis()->SetTitle("Charge");
 					pClusterSel->Draw();
-					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.pdf");
-					c4->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/chargeCluster.png");
+					c4->SaveAs((plotDir+"chargeCluster.pdf").c_str());
+					c4->SaveAs((plotDir+"chargeCluster.png").c_str());
 					getchar();
 					pObsCluster->Reset();
 					pUnfoldCluster->Reset();
@@ -541,9 +536,6 @@ int main(){
 					c4->Clear();
 
 				}
-
-// end new?
-
 
 				hObsCW->Fill(ObsCW);
 				hExpCW->Fill(ExpCW);
@@ -648,8 +640,8 @@ int main(){
 	gStyle->SetOptStat(0);
 	hExpVsRec->Draw();
 	hExpVsRec->SetDrawOption("COLZ");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsRec.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsRec.png");
+	c2->SaveAs((plotDir+"ExpVsRec.pdf").c_str());
+	c2->SaveAs((plotDir+"ExpVsRec.png").c_str());
 
 	hExpVsObs->GetXaxis()->SetTitle("Expected Cluster Width");
 	hExpVsObs->GetYaxis()->SetTitle("Observed Cluster Width");
@@ -658,8 +650,8 @@ int main(){
 	gStyle->SetOptStat(0);
 	hExpVsObs->Draw();
 	hExpVsObs->SetDrawOption("COLZ");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsObs.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsObs.png");
+	c2->SaveAs((plotDir+"ExpVsObs.pdf").c_str());
+	c2->SaveAs((plotDir+"ExpVsObs.png").c_str());
 
 	hExpVsRecSel->GetXaxis()->SetTitle("Expected Cluster Width");
 	hExpVsRecSel->GetYaxis()->SetTitle("Reconstructed and Selected Cluster Width");
@@ -668,8 +660,8 @@ int main(){
 	gStyle->SetOptStat(0);
 	hExpVsRecSel->Draw();
 	hExpVsRecSel->SetDrawOption("COLZ");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsRecSel.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsRecSel.png");
+	c2->SaveAs((plotDir+"ExpVsRecSel.pdf").c_str());
+	c2->SaveAs((plotDir+"ExpVsRecSel.png").c_str());
 
 	hExpVsUnfold->GetXaxis()->SetTitle("Expected Cluster Width");
 	hExpVsUnfold->GetYaxis()->SetTitle("Unfolded Cluster Width");
@@ -678,8 +670,8 @@ int main(){
 	gStyle->SetOptStat(0);
 	hExpVsUnfold->Draw();
 	hExpVsUnfold->SetDrawOption("COLZ");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsUnfold.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsUnfold.png");
+	c2->SaveAs((plotDir+"ExpVsUnfold.pdf").c_str());
+	c2->SaveAs((plotDir+"ExpVsUnfold.png").c_str());
 
 	hExpVsWeight->GetXaxis()->SetTitle("Expected Cluster Width");
 	hExpVsWeight->GetYaxis()->SetTitle("Weighted Cluster Width");
@@ -688,15 +680,15 @@ int main(){
 	gStyle->SetOptStat(0);
 	hExpVsWeight->Draw();
 	hExpVsWeight->SetDrawOption("COLZ");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsWeight.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ExpVsWeight.png");
+	c2->SaveAs((plotDir+"ExpVsWeight.pdf").c_str());
+	c2->SaveAs((plotDir+"ExpVsWeight.png").c_str());
 
 	hRelDiffCrossTalkWeighted->GetXaxis()->SetTitle("(Weighted - Normal)/Normal CrossTalk Cluster Width");
 	c2->cd();
 	gStyle->SetOptStat(0);
 	hRelDiffCrossTalkWeighted->Draw();
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiffWeighted.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiffWeighted.png");
+	c2->SaveAs((plotDir+"RelDiffWeighted.pdf").c_str());
+	c2->SaveAs((plotDir+"RelDiffWeighted.png").c_str());
 
 
 	//--------- //ClusterWidth
@@ -728,8 +720,8 @@ int main(){
 	leg1->Draw("SAME");
 	c1->Write();
 	gStyle->SetOptStat(0);
-	c1->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ClusterWidth.pdf");
-	c1->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/ClusterWidth.png");
+	c1->SaveAs((plotDir+"ClusterWidth.pdf").c_str());
+	c1->SaveAs((plotDir+"ClusterWidth.png").c_str());
 
 	//---------
 
@@ -763,8 +755,8 @@ int main(){
 	leg2->AddEntry(hRelDiff23,"2<CW<3","l");
 	leg2->AddEntry(hRelDiff3,"CW>=3","l");
 	leg2->Draw("SAME");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiff.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiff.png");
+	c2->SaveAs((plotDir+"RelDiff.pdf").c_str());
+	c2->SaveAs((plotDir+"RelDiff.png").c_str());
 	c2->Write();
 	c2->cd();
 	hRelDiff1Weighted->Draw();
@@ -774,8 +766,8 @@ int main(){
 	hRelDiff3Weighted->Draw("SAME");
 	leg2->Draw("SAME");
 	c2->Write();
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiff2.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiff2.png");
+	c2->SaveAs((plotDir+"RelDiff2.pdf").c_str());
+	c2->SaveAs((plotDir+"RelDiff2.png").c_str());
 
 
 
@@ -787,23 +779,18 @@ int main(){
 	hRelDiffCrossTalk_M->GetXaxis()->SetTitle("(RecWithDiffCrossTalk-RecSel)/RecSel Cluster Width");
 	hRelDiffCrossTalk_P->SetLineColor(1);
 	hRelDiffCrossTalk_M->SetLineColor(42);
-	// hRelDiff->SetLineColor(46);
 	hRelDiffCrossTalkWeighted->SetLineColor(38);
-	// hRelDiffCrossTalk_P->Scale(1./hRelDiffCrossTalk_P->Integral());
-	// hRelDiffCrossTalk_M->Scale(1./hRelDiffCrossTalk_M->Integral());
 	hRelDiffCrossTalk_M->Draw();
 	hRelDiffCrossTalk_P->Draw("SAME");
-	// hRelDiff->Draw("SAME");
 	hRelDiffCrossTalkWeighted->Draw("SAME");
 
-	// leg3->AddEntry(hRelDiff,"Rec","l");
 	leg3->AddEntry(hRelDiffCrossTalk_P,"CrossTalk_P","l");
 	leg3->AddEntry(hRelDiffCrossTalk_M,"CrossTalk_M","l");
 	leg3->AddEntry(hRelDiffCrossTalkWeighted,"CrossTalkWeighted","l");
 	leg3->Draw("SAME");
 	c2->Write();
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiffCrossTalk.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiffCrossTalk.png");
+	c2->SaveAs((plotDir+"RelDiffCrossTalk.pdf").c_str());
+	c2->SaveAs((plotDir+"RelDiffCrossTalk.png").c_str());
 
 	//---------
 
@@ -823,14 +810,14 @@ int main(){
 	leg4->AddEntry(hRecSelCharge,"RecSel","l");
 	leg4->Draw("SAME");
 	c3->Write();
-	c3->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/Charge.pdf");
-	c3->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/Charge.png");
+	c3->SaveAs((plotDir+"Charge.pdf").c_str());
+	c3->SaveAs((plotDir+"Charge.png").c_str());
 	//---------
 
 	//--------- //RelDiff
 
 	TLegend* legRelDiff=new TLegend(0.7,0.7,0.9,0.9);
-	c2->cd();  
+	c2->cd();
 	hRelDiffObs->GetXaxis()->SetTitle("(CW - ExpCW)/ExpCW");
 	hRelDiffObs->GetYaxis()->SetRangeUser(0,hRelDiffRec->GetMaximum()+9);
 	hRelDiffObs->SetLineColor(1);
@@ -850,8 +837,8 @@ int main(){
 	legRelDiff->AddEntry(hRelDiffWeight,"Weight","l");
 	legRelDiff->Draw("SAME");
 	c2->Write();
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiff2.pdf");
-	c2->SaveAs("/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v1/RelDiff2.png");
+	c2->SaveAs((plotDir+"RelDiff2.pdf").c_str());
+	c2->SaveAs((plotDir+"RelDiff2.png").c_str());
 
 
 

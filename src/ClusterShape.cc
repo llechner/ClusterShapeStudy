@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <list>
+#include <limits>
 #include <string>
 #include <dirent.h>
 #include "Math/SMatrix.h"
@@ -68,6 +69,10 @@ vector<double> Unfold(const vector<double>& q, double x0, double x1, double x2){
 double QperStrip(double path, double Q1, double Q2, int n){
 	double medQdist=300; // change that to be flexible?
 	return (medQdist*path-(Q1+Q2))/n;
+}
+
+double min(double a, double b){
+    return (a < b) ? a : b;
 }
 
 double Mean(vector<double> Vect){
@@ -192,25 +197,26 @@ vector<double> ClusterizationWithNoise(vector<double> UnderCluster, double QStri
 vector<vector<double>> TotalClusterWidth(vector<double> Cluster, double QStrip){
 
 	std::vector<std::vector<double>> res;
-	res.reserve(Cluster.size());
+	res.reserve(2);
 	std::vector<double> ClusterWidth;
 	ClusterWidth.reserve(Cluster.size());
 
-	if(Cluster.size()>2){
-		// add partial charges for edge strips, 1 for intermed strips
-		if(ClusterWidth[0]>1) ClusterWidth.push_back(1);
-		else ClusterWidth.push_back(Cluster[0]/QStrip);
-
-		for(unsigned int j=1;j<Cluster.size()-1;j++){
-			ClusterWidth.push_back(1);
-		}
-
-		if(ClusterWidth[Cluster.size()-1]>1) ClusterWidth.push_back(1);
-		else ClusterWidth.push_back(Cluster[Cluster.size()-1]/QStrip);
+	if(Cluster.size()==1){
+        ClusterWidth.push_back(1);
+    }
+	else if(Cluster.size()==2){
+        ClusterWidth.push_back(1);
+        ClusterWidth.push_back(1);
 	}
-	else{
-		if(Cluster.size()==1) ClusterWidth.push_back(1);
-		if(Cluster.size()==2) ClusterWidth.push_back(1), ClusterWidth.push_back(1);
+	else if(Cluster.size()>2){
+		// add partial charges for edge strips, 1 for intermed strips
+
+        ClusterWidth.push_back(min(Cluster[0]/QStrip,1));
+        for(int j=1;j<Cluster.size()-1;j++){
+            ClusterWidth.push_back(1);
+        }
+        ClusterWidth.push_back(min(Cluster[Cluster.size()-1]/QStrip,1));
+
 	}
 
 	res.push_back(ClusterWidth);
