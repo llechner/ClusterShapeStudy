@@ -77,15 +77,15 @@ int main(){
 
 	const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v3/";
 
-    try{
-        std::experimental::filesystem::create_directory(plotDir);
-    } catch (...){
-    }
+        try{
+            std::experimental::filesystem::create_directory(plotDir);
+        } catch (...){
+        }
 
-    try{
-        std::experimental::filesystem::copy("data/index.php",plotDir.c_str());
-    } catch (...){
-    }
+        try{
+            std::experimental::filesystem::copy("data/index.php",plotDir.c_str());
+        } catch (...){
+        }
 
 	TFile* ifile=TFile::Open(filename.c_str());
 	TTree* tree=(TTree*) ifile->Get("testTree/tree");
@@ -100,21 +100,21 @@ int main(){
 	std::vector<int>*clusterSubdetid		= 0;
 	std::vector<int>*clusterLayerwheel		= 0;
 	std::vector<unsigned int>*clusterDetid		= 0;
-	std::vector<double>* clusterLocalTrackX		= 0;
-	std::vector<double>* clusterLocalTrackY		= 0;
-	std::vector<double>* clusterLocalTrackZ		= 0;
+//	std::vector<double>* clusterLocalTrackX		= 0;
+//	std::vector<double>* clusterLocalTrackY		= 0;
+//	std::vector<double>* clusterLocalTrackZ		= 0;
 	std::vector<double>* clusterLocalpitch		= 0;
 	std::vector<double>* clusterSensorThickness	= 0;
 	std::vector<bool>*clusterSaturation		= 0;
 	std::vector<bool>*clusterOverlapping		= 0;
 	std::vector<bool>*clusterFarfromedge		= 0;
 	std::vector<double>* clusterPath		= 0;
-	std::vector<double>* clusterBdotX		= 0;
-	std::vector<double>* clusterBdotY		= 0;
-	std::vector<double>* clusterBdotZ		= 0;
-	std::vector<double>* clusterBdotMag		= 0;
-	std::vector<unsigned int>*clusterEvent		= 0;
-	std::vector<unsigned int>*clusterStripEvent	= 0;
+//	std::vector<double>* clusterBdotX		= 0;
+//	std::vector<double>* clusterBdotY		= 0;
+//	std::vector<double>* clusterBdotZ		= 0;
+//	std::vector<double>* clusterBdotMag		= 0;
+//	std::vector<unsigned int>*clusterEvent		= 0;
+//	std::vector<unsigned int>*clusterStripEvent	= 0;
 
 	tree->SetBranchAddress("clusterStripIdx",&clusterStripIdx);
 	tree->SetBranchAddress("clusterAmplitudes",&clusterAmplitudes);
@@ -126,21 +126,21 @@ int main(){
 	tree->SetBranchAddress("clusterSubdetid",&clusterSubdetid);
 	tree->SetBranchAddress("clusterLayerwheel",&clusterLayerwheel);
 	tree->SetBranchAddress("clusterDetid",&clusterDetid);
-	tree->SetBranchAddress("clusterLocalTrackX",&clusterLocalTrackX);
-	tree->SetBranchAddress("clusterLocalTrackY",&clusterLocalTrackY);
-	tree->SetBranchAddress("clusterLocalTrackZ",&clusterLocalTrackZ);
+//	tree->SetBranchAddress("clusterLocalTrackX",&clusterLocalTrackX);
+//	tree->SetBranchAddress("clusterLocalTrackY",&clusterLocalTrackY);
+//	tree->SetBranchAddress("clusterLocalTrackZ",&clusterLocalTrackZ);
 	tree->SetBranchAddress("clusterLocalpitch",&clusterLocalpitch);
 	tree->SetBranchAddress("clusterSensorThickness",&clusterSensorThickness);
 	tree->SetBranchAddress("clusterSaturation",&clusterSaturation);
 	tree->SetBranchAddress("clusterOverlapping",&clusterOverlapping);
 	tree->SetBranchAddress("clusterFarfromedge",&clusterFarfromedge);
 	tree->SetBranchAddress("clusterPath",&clusterPath);
-	tree->SetBranchAddress("clusterBdotX",&clusterBdotX);
-	tree->SetBranchAddress("clusterBdotY",&clusterBdotY);
-	tree->SetBranchAddress("clusterBdotZ",&clusterBdotZ);
-	tree->SetBranchAddress("clusterBdotMag",&clusterBdotMag);
-	tree->SetBranchAddress("clusterEvent",&clusterEvent);
-	tree->SetBranchAddress("clusterStripEvent",&clusterStripEvent);
+//	tree->SetBranchAddress("clusterBdotX",&clusterBdotX);
+//	tree->SetBranchAddress("clusterBdotY",&clusterBdotY);
+//	tree->SetBranchAddress("clusterBdotZ",&clusterBdotZ);
+//	tree->SetBranchAddress("clusterBdotMag",&clusterBdotMag);
+//	tree->SetBranchAddress("clusterEvent",&clusterEvent);
+//	tree->SetBranchAddress("clusterStripEvent",&clusterStripEvent);
 	//------------------------------------
 
 	//------------------------------------ //Declarations
