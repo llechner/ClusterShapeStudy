@@ -22,6 +22,11 @@
 
 #include "../interface/Estimator.h"
 #include "../interface/ClusterShape.h"
+#include "cmssw/DataFormats/SiStripCluster/interface/SiStripCluster.h"
+#include "cmssw/DataFormats/SiStripDetId/interface/SiStripDetId.h"
+#include "cmssw/DataFormats/TrackerCommon/interface/TrackerTopology.h"
+#include "cmssw/FWCore/Framework/interface/ESHandle.h"
+#include "cmssw/Geometry/Records/interface/TrackerTopologyRcd.h"
 
 double x[14][3]={
 	{0.848,0.063,0.013}, //TIB //IB1
@@ -90,22 +95,23 @@ int main(){
 	TFile* ifile=TFile::Open(filename.c_str());
 	TTree* tree=(TTree*) ifile->Get("testTree/tree");
 
-	std::vector<unsigned int>*clusterStripIdx	= 0;
+//	std::vector<unsigned int>*clusterStripIdx	= 0;
 	std::vector<double>* clusterAmplitudes		= 0;
 	std::vector<unsigned int>*clusterIdx		= 0;
-	std::vector<double>* clusterCharge		= 0;
+	std::vector<double>* clusterCharge		    = 0;
 	std::vector<unsigned int>*clusterWidth		= 0;
 	std::vector<double>* clusterLocalTrackPhi	= 0;
 	std::vector<double>* clusterLocalTrackTheta	= 0;
-	std::vector<int>*clusterSubdetid		= 0;
-	std::vector<int>*clusterLayerwheel		= 0;
+	std::vector<int>*clusterrawid		        = 0;
+//	std::vector<int>*clusterSubdetid		    = 0;
+//	std::vector<int>*clusterLayerwheel		    = 0;
 	std::vector<unsigned int>*clusterDetid		= 0;
 //	std::vector<double>* clusterLocalTrackX		= 0;
 //	std::vector<double>* clusterLocalTrackY		= 0;
 //	std::vector<double>* clusterLocalTrackZ		= 0;
 	std::vector<double>* clusterLocalpitch		= 0;
 	std::vector<double>* clusterSensorThickness	= 0;
-	std::vector<bool>*clusterSaturation		= 0;
+	std::vector<bool>*clusterSaturation		    = 0;
 	std::vector<bool>*clusterOverlapping		= 0;
 	std::vector<bool>*clusterFarfromedge		= 0;
 	std::vector<double>* clusterPath		= 0;
@@ -116,32 +122,32 @@ int main(){
 //	std::vector<unsigned int>*clusterEvent		= 0;
 //	std::vector<unsigned int>*clusterStripEvent	= 0;
 
-	tree->SetBranchAddress("clusterStripIdx",&clusterStripIdx);
-	tree->SetBranchAddress("clusterAmplitudes",&clusterAmplitudes);
-	tree->SetBranchAddress("clusterIdx",&clusterIdx);
-	tree->SetBranchAddress("clusterCharge",&clusterCharge);
-	tree->SetBranchAddress("clusterWidth",&clusterWidth);
-	tree->SetBranchAddress("clusterLocalTrackPhi",&clusterLocalTrackPhi);
-	tree->SetBranchAddress("clusterLocalTrackTheta",&clusterLocalTrackTheta);
-	tree->SetBranchAddress("clusterSubdetid",&clusterSubdetid);
-	tree->SetBranchAddress("clusterLayerwheel",&clusterLayerwheel);
-	tree->SetBranchAddress("clusterDetid",&clusterDetid);
-//	tree->SetBranchAddress("clusterLocalTrackX",&clusterLocalTrackX);
-//	tree->SetBranchAddress("clusterLocalTrackY",&clusterLocalTrackY);
-//	tree->SetBranchAddress("clusterLocalTrackZ",&clusterLocalTrackZ);
-	tree->SetBranchAddress("clusterLocalpitch",&clusterLocalpitch);
-	tree->SetBranchAddress("clusterSensorThickness",&clusterSensorThickness);
-	tree->SetBranchAddress("clusterSaturation",&clusterSaturation);
-	tree->SetBranchAddress("clusterOverlapping",&clusterOverlapping);
-	tree->SetBranchAddress("clusterFarfromedge",&clusterFarfromedge);
-	tree->SetBranchAddress("clusterPath",&clusterPath);
-//	tree->SetBranchAddress("clusterBdotX",&clusterBdotX);
-//	tree->SetBranchAddress("clusterBdotY",&clusterBdotY);
-//	tree->SetBranchAddress("clusterBdotZ",&clusterBdotZ);
-//	tree->SetBranchAddress("clusterBdotMag",&clusterBdotMag);
-//	tree->SetBranchAddress("clusterEvent",&clusterEvent);
-//	tree->SetBranchAddress("clusterStripEvent",&clusterStripEvent);
-	//------------------------------------
+////	tree->SetBranchAddress("GainCalibrationStripIdx",&clusterStripIdx);
+	tree->SetBranchAddress("GainCalibrationAmplitudes",&clusterAmplitudes);
+	tree->SetBranchAddress("GainCalibrationIdx",&clusterIdx);
+	tree->SetBranchAddress("GainCalibrationCharge",&clusterCharge);
+	tree->SetBranchAddress("GainCalibrationnstrips",&clusterWidth);
+	tree->SetBranchAddress("trackphi",&clusterLocalTrackPhi);
+	tree->SetBranchAddress("tracktheta",&clusterLocalTrackTheta);
+	tree->SetBranchAddress("GainCalibrationrawid",&clusterrawid);
+////	tree->SetBranchAddress("GainCalibrationSubdetid",&clusterSubdetid);
+////	tree->SetBranchAddress("GainCalibrationLayerwheel",&clusterLayerwheel);
+	tree->SetBranchAddress("GainCalibrationDetid",&clusterDetid);
+//	tree->SetBranchAddress("GainCalibrationLocalTrackX",&clusterLocalTrackX);
+//	tree->SetBranchAddress("GainCalibrationLocalTrackY",&clusterLocalTrackY);
+//	tree->SetBranchAddress("GainCalibrationLocalTrackZ",&clusterLocalTrackZ);
+	tree->SetBranchAddress("GainCalibrationLocalpitch",&clusterLocalpitch);
+	tree->SetBranchAddress("GainCalibrationSensorThickness",&clusterSensorThickness);
+	tree->SetBranchAddress("GainCalibrationSaturation",&clusterSaturation);
+	tree->SetBranchAddress("GainCalibrationOverlapping",&clusterOverlapping);
+	tree->SetBranchAddress("GainCalibrationFarfromedge",&clusterFarfromedge);
+	tree->SetBranchAddress("GainCalibrationPath",&clusterPath);
+//	tree->SetBranchAddress("GainCalibrationBdotX",&clusterBdotX);
+//	tree->SetBranchAddress("GainCalibrationBdotY",&clusterBdotY);
+//	tree->SetBranchAddress("GainCalibrationBdotZ",&clusterBdotZ);
+//	tree->SetBranchAddress("GainCalibrationBdotMag",&clusterBdotMag);
+//	tree->SetBranchAddress("GainCalibrationEvent",&clusterEvent);
+//	tree->SetBranchAddress("GainCalibrationStripEvent",&clusterStripEvent);
 
 	//------------------------------------ //Declarations
 	TCanvas* c1=new TCanvas("c1","c1");
@@ -277,6 +283,9 @@ int main(){
 	double UncertQS=0.;
 	//------------------------------------
 
+   edm::ESHandle<TrackerTopology> tTopoHandle;
+//   iSetup.get<TrackerTopologyRcd>().get(tTopoHandle);
+   const TrackerTopology* const tTopo = tTopoHandle.product();
 
 	for (unsigned int i=0;i<tree->GetEntries();i++){
 		tree->GetEntry(i);
@@ -284,8 +293,13 @@ int main(){
 
 		for(unsigned int c=0;c<clusterWidth->size();c++){
 
-			if(clusterSubdetid->at(c)==TIBid){
-				if(clusterLayerwheel->at(c)<=2){
+            SiStripDetId subdet(clusterrawid->at(c));
+            int clusterSubdetid   = subdet.subDetector();
+            int clusterLayerwheel = -1
+
+			if(clusterSubdetid==TIBid){
+                clusterLayerwheel = tTopo->tibLayer(clusterrawid->at(c));
+				if(clusterLayerwheel<=2){
 					x0=x[0][0];
 					x1=x[0][1];
 					x2=x[0][2];
@@ -301,26 +315,28 @@ int main(){
 				}
 			}
 
-			if(clusterSubdetid->at(c)==TIDid){
-				if(clusterLayerwheel->at(c) == 1){
+			if(clusterSubdetid==TIDid){
+                clusterLayerwheel = tTopo->tidWheel(clusterrawid->at(c));
+				if(clusterLayerwheel==1){
 					x0=x[4][0];
 					x1=x[4][1];
 					x2=x[4][2];
 				}
-				else if(clusterLayerwheel->at(c) == 2){
+				else if(clusterLayerwheel==2){
 					x0=x[5][0];
 					x1=x[5][1];
 					x2=x[5][2];
 				}
-				else if(clusterLayerwheel->at(c) == 3){
+				else if(clusterLayerwheel==3){
 					x0=x[6][0];
 					x1=x[6][1];
 					x2=x[6][2];
 				}
 			}
 
-			if(clusterSubdetid->at(c)==TOBid){
-				if(clusterLayerwheel->at(c)<=4){
+			if(clusterSubdetid==TOBid){
+                clusterLayerwheel = tTopo->tobLayer(clusterrawid->at(c));
+				if(clusterLayerwheel<=4){
 					x0=x[2][0];
 					x1=x[2][1];
 					x2=x[2][2];
@@ -336,38 +352,39 @@ int main(){
 				}
 			}
 
-			if(clusterSubdetid->at(c)==TECid){
-				if(clusterLayerwheel->at(c) == 1){
+			if(clusterSubdetid==TECid){
+                clusterLayerwheel = tTopo->tecWheel(clusterrawid->at(c));
+				if(clusterLayerwheel==1){
 					x0=x[7][0];
 					x1=x[7][1];
 					x2=x[7][2];
 				}
-				else if(clusterLayerwheel->at(c) == 2){
+				else if(clusterLayerwheel==2){
 					x0=x[8][0];
 					x1=x[8][1];
 					x2=x[8][2];
 				}
-				else if(clusterLayerwheel->at(c) == 3){
+				else if(clusterLayerwheel==3){
 					x0=x[9][0];
 					x1=x[9][1];
 					x2=x[9][2];
 				}
-				else if(clusterLayerwheel->at(c) == 4){
+				else if(clusterLayerwheel==4){
 					x0=x[10][0];
 					x1=x[10][1];
 					x2=x[10][2];
 				}
-				else if(clusterLayerwheel->at(c) == 5){
+				else if(clusterLayerwheel==5){
 					x0=x[11][0];
 					x1=x[11][1];
 					x2=x[11][2];
 				}
-				else if(clusterLayerwheel->at(c) == 6){
+				else if(clusterLayerwheel==6){
 					x0=x[12][0];
 					x1=x[12][1];
 					x2=x[12][2];
 				}
-				else if(clusterLayerwheel->at(c) == 7){
+				else if(clusterLayerwheel==7){
 					x0=x[13][0];
 					x1=x[13][1];
 					x2=x[13][2];
@@ -380,10 +397,11 @@ int main(){
 				ExpCW=abs((tan(0.02)+cos(clusterLocalTrackPhi->at(c))*tan(clusterLocalTrackTheta->at(c)))*clusterSensorThickness->at(c)/clusterLocalpitch->at(c)); //We'll need Lorentz angle Theta_L
 				Idx=clusterIdx->at(c);
 
+
 				for(unsigned int z=0;z<clusterStripIdx->size();z++){
-					if(clusterStripIdx->at(z) == Idx){
-						q.push_back(clusterAmplitudes->at(z));
-					}
+    				if(clusterStripIdx->at(z) == Idx){
+        				q.push_back(clusterAmplitudes->at(z));
+    	    		}
 				}
 
 				ObsCharge=Sum(q);
