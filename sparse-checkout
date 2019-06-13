@@ -1,0 +1,17 @@
+/.gitignore
+/.clang-tidy
+/.clang-format
+DataFormats/Common/
+DataFormats/SiStripCluster/
+DataFormats/SiStripDetId/
+DataFormats/SiStripDigi/
+DataFormats/TrackerCommon/
+DataFormats/DetId
+DataFormats/SiPixelDetId/
+DataFormats/Provenance/
+FWCore/Framework/
+FWCore/MessageLogger/
+FWCore/Utilities/
+Geometry/Records/
+SimDataFormats/TrackerDigiSimLink/
+SimDataFormats/EncodedEventId/
