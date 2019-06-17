@@ -81,20 +81,22 @@ int main(){
 
     // const char *path="/eos/cms/store/group/dpg_tracker_strip/comm_tracker/Strip/Calibration/calibrationtree/GR17_Aag/";
     //string filename="/eos/cms/store/group/dpg_tracker_strip/comm_tracker/Strip/Calibration/calibrationtree/GR17_Aag/calibTree_304777_25.root";
-    const string filename="data/input.root";
+//    const string filename="data/input.root";
+    const string filename="data/merged_1.root";
     const string outfilename="data/results.root";
 
-    const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v4/";
+    const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_v5/";
 
-        try{
-            std::experimental::filesystem::create_directory(plotDir);
-        } catch (...){
-        }
+    std::experimental::filesystem::create_directory(plotDir);
+    try{
+        std::experimental::filesystem::create_directory(plotDir);
+    } catch (...){
+    }
 
-        try{
-            std::experimental::filesystem::copy("data/index.php",plotDir.c_str());
-        } catch (...){
-        }
+    try{
+        std::experimental::filesystem::copy("data/index.php",plotDir.c_str());
+    } catch (...){
+    }
 
     TFile* ifile=TFile::Open(filename.c_str());
     TTree* tree=(TTree*) ifile->Get("testTree/tree");
@@ -121,38 +123,56 @@ int main(){
     std::vector<bool>*clusterFarfromedge        = 0;
     std::vector<double>* clusterPath        = 0;
 
-    tree->SetBranchAddress("clusterstripidx",&clusterStripIdx);
-    tree->SetBranchAddress("GainCalibrationamplitude",&clusterAmplitudes);
-    tree->SetBranchAddress("tsosclusterIdx",&clusterIdx);
-    tree->SetBranchAddress("GainCalibrationcharge",&clusterCharge);
-//    tree->SetBranchAddress("clusterwidth",&clusterWidth);
-    tree->SetBranchAddress("GainCalibrationnstrips",&clusterWidth);
-    tree->SetBranchAddress("trackphi",&clusterLocalTrackPhi);
-    tree->SetBranchAddress("tracktheta",&clusterLocalTrackTheta);
+//    tree->SetBranchAddress("clusterstripidx",&clusterStripIdx);
+    tree->SetBranchAddress("clusterStripIdx",&clusterStripIdx);
+//    tree->SetBranchAddress("GainCalibrationamplitude",&clusterAmplitudes);
+    tree->SetBranchAddress("clusterAmplitudes",&clusterAmplitudes);
+//    tree->SetBranchAddress("GainCalibrationamplitude",&clusterAmplitudes);
+//    tree->SetBranchAddress("tsosclusterIdx",&clusterIdx);
+    tree->SetBranchAddress("clusterIdx",&clusterIdx);
+//    tree->SetBranchAddress("GainCalibrationcharge",&clusterCharge);
+    tree->SetBranchAddress("clusterCharge",&clusterCharge);
+//    tree->SetBranchAddress("GainCalibrationcharge",&clusterCharge);
+    tree->SetBranchAddress("clusterWidth",&clusterWidth);
+//    tree->SetBranchAddress("GainCalibrationnstrips",&clusterWidth);
+    tree->SetBranchAddress("clusterLocalTrackPhi",&clusterLocalTrackPhi);
+    tree->SetBranchAddress("clusterLocalTrackTheta",&clusterLocalTrackTheta);
+//    tree->SetBranchAddress("trackphi",&clusterLocalTrackPhi);
+//    tree->SetBranchAddress("tracktheta",&clusterLocalTrackTheta);
 //    tree->SetBranchAddress("GainCalibrationrawid",&clusterrawid);
-    tree->SetBranchAddress("clustersubdetid",&clusterSubdetid);
-    tree->SetBranchAddress("clusterlayerwheel",&clusterLayerwheel);
-    tree->SetBranchAddress("clusterdetid",&clusterDetid);
+//    tree->SetBranchAddress("clustersubdetid",&clusterSubdetid);
+    tree->SetBranchAddress("clusterSubdetid",&clusterSubdetid);
+//    tree->SetBranchAddress("clusterlayerwheel",&clusterLayerwheel);
+    tree->SetBranchAddress("clusterLayerwheel",&clusterLayerwheel);
+//    tree->SetBranchAddress("clusterdetid",&clusterDetid);
+    tree->SetBranchAddress("clusterDetid",&clusterDetid);
 //  tree->SetBranchAddress("GainCalibrationLocalTrackX",&clusterLocalTrackX);
 //  tree->SetBranchAddress("GainCalibrationLocalTrackY",&clusterLocalTrackY);
 //  tree->SetBranchAddress("GainCalibrationLocalTrackZ",&clusterLocalTrackZ);
-    tree->SetBranchAddress("tsoslocalpitch",&clusterLocalpitch);
-    tree->SetBranchAddress("GainCalibrationthickness",&clusterSensorThickness);
-    tree->SetBranchAddress("GainCalibrationsaturation",&clusterSaturation);
-    tree->SetBranchAddress("GainCalibrationoverlapping",&clusterOverlapping);
-    tree->SetBranchAddress("GainCalibrationfarfromedge",&clusterFarfromedge);
-    tree->SetBranchAddress("GainCalibrationpath",&clusterPath);
+//    tree->SetBranchAddress("tsoslocalpitch",&clusterLocalpitch);
+    tree->SetBranchAddress("clusterLocalpitch",&clusterLocalpitch);
+//    tree->SetBranchAddress("GainCalibrationthickness",&clusterSensorThickness);
+//    tree->SetBranchAddress("GainCalibrationsaturation",&clusterSaturation);
+//    tree->SetBranchAddress("GainCalibrationoverlapping",&clusterOverlapping);
+//    tree->SetBranchAddress("GainCalibrationfarfromedge",&clusterFarfromedge);
+//    tree->SetBranchAddress("GainCalibrationpath",&clusterPath);
+    tree->SetBranchAddress("clusterSensorThickness",&clusterSensorThickness);
+    tree->SetBranchAddress("clusterSaturation",&clusterSaturation);
+    tree->SetBranchAddress("clusterOverlapping",&clusterOverlapping);
+    tree->SetBranchAddress("clusterFarfromedge",&clusterFarfromedge);
+    tree->SetBranchAddress("clusterPath",&clusterPath);
 
     //------------------------------------ //Declarations
     TCanvas* c1=new TCanvas("c1","c1");
     TCanvas* c2=new TCanvas("c2","c2");
     TCanvas* c3=new TCanvas("c3","c3");
     TCanvas* c4=new TCanvas("c4","c4",1200,800);
-    TLegend* leg1=new TLegend(0.7,0.7,0.9,0.9);
-    TLegend* leg2=new TLegend(0.7,0.7,0.9,0.9);
+    TCanvas* c5=new TCanvas("c5","c5");
+    TLegend* leg1=new TLegend(0.7,0.75,0.9,0.9);
+    TLegend* leg2=new TLegend(0.7,0.8,0.9,0.9);
     TLegend* leg3=new TLegend(0.7,0.7,0.9,0.9);
     TLegend* leg4=new TLegend(0.7,0.7,0.9,0.9);
-    // TLegend* leg5=new TLegend(0.75,0.75,0.9,0.9);
+    TLegend* leg5=new TLegend(0.7,0.8,0.9,0.9);
 
     TRandom3* r=new TRandom3();
 
@@ -503,14 +523,17 @@ int main(){
                     pObsCluster->GetYaxis()->SetTitle("Charge");
                     pObsCluster->GetYaxis()->SetRangeUser(0,pUnfoldCluster->GetMaximum()+9);
                     pObsCluster->SetLineColor(4);
+                    pObsCluster->SetLineWidth(2);
                     pObsCluster->Draw();
                     pUnfoldCluster->SetLineColor(2);
+                    pUnfoldCluster->SetLineWidth(2);
                     pUnfoldCluster->Draw("SAME");
                     ligneThreshold->SetLineColor(1);
+                    ligneThreshold->SetLineWidth(2);
                     ligneThreshold->SetLineStyle(7);
                     ligneThreshold->Draw("SAME");
-                    legend->AddEntry(pObsCluster,"Observed","l");
-                    legend->AddEntry(pUnfoldCluster,"Unfold","l");
+                    legend->AddEntry(pObsCluster,"observed","l");
+                    legend->AddEntry(pUnfoldCluster,"unfolded","l");
                     legend->Draw("SAME");
                     c4->cd(2);
                     pUnfoldCluster->GetXaxis()->SetTitle("Strip");
@@ -519,13 +542,16 @@ int main(){
                     c4->cd(3);
                     pUnderCluster->GetXaxis()->SetTitle("Strip");
                     pUnderCluster->GetYaxis()->SetTitle("Charge");
+                    pUnderCluster->SetLineWidth(2);
                     pUnderCluster->Draw();
                     ligneQStrip->SetLineColor(1);
+                    ligneQStrip->SetLineWidth(2);
                     ligneQStrip->SetLineStyle(7);
                     ligneQStrip->Draw("SAME");
                     c4->cd(4);
                     pClusterSel->GetXaxis()->SetTitle("Strip");
                     pClusterSel->GetYaxis()->SetTitle("Charge");
+                    pClusterSel->SetLineWidth(2);
                     pClusterSel->Draw();
                     c4->SaveAs((plotDir+"chargeCluster.pdf").c_str());
                     c4->SaveAs((plotDir+"chargeCluster.png").c_str());
@@ -694,31 +720,59 @@ int main(){
     c2->SaveAs((plotDir+"RelDiffWeighted.png").c_str());
 
 
+    //--------- //ClusterWidth discrete
+
+    c5->cd();
+    c5->SetLogy();
+    hExpCW->GetXaxis()->SetTitle("Cluster Width");
+    hExpCW->SetLineColor(38);
+    hExpCW->SetLineWidth(2);
+    hExpCW->Draw();
+    hObsCW->SetLineColor(1);
+    hObsCW->SetLineWidth(2);
+    hObsCW->Draw("SAME");
+    leg5->AddEntry(hExpCW,"expected","l");
+    leg5->AddEntry(hObsCW,"observed","l");
+    leg5->Draw("SAME");
+    c5->Write();
+    gStyle->SetOptStat(0);
+    c5->SaveAs((plotDir+"ClusterWidth_discrete.pdf").c_str());
+    c5->SaveAs((plotDir+"ClusterWidth_discrete.png").c_str());
+
+    //---------
+
     //--------- //ClusterWidth
 
     c1->cd();
     c1->SetLogy();
     hExpCW->GetXaxis()->SetTitle("Cluster Width");
     hExpCW->SetLineColor(38);
+    hExpCW->SetLineWidth(2);
     hObsCW->SetLineColor(1);
+    hObsCW->SetLineWidth(2);
     hUnfoldCW->SetLineColor(42);
+    hUnfoldCW->SetLineWidth(2);
     hRecCW->SetLineColor(46);
+    hRecCW->SetLineWidth(2);
     hRecSelCW->SetLineColor(8);
+    hRecSelCW->SetLineWidth(2);
     hWeightedWithUncertaintiesCrossTalkCW->SetLineColor(40);
+    hWeightedWithUncertaintiesCrossTalkCW->SetLineWidth(2);
     hRecSelProbCW->SetLineColor(28);
+    hRecSelProbCW->SetLineWidth(2);
     hExpCW->Draw();
     hObsCW->Draw("SAME");
     hUnfoldCW->Draw("SAME");
     hRecCW->Draw("SAME");
-    hRecSelCW->Draw("SAME");
-    hWeightedWithUncertaintiesCrossTalkCW->Draw("SAME");
+//    hRecSelCW->Draw("SAME");
+//    hWeightedWithUncertaintiesCrossTalkCW->Draw("SAME");
     // hRecSelProbCW->Draw("SAME");
-    leg1->AddEntry(hObsCW,"Obs","l");
-    leg1->AddEntry(hExpCW,"Exp","l");
-    leg1->AddEntry(hUnfoldCW,"Unfold","l");
-    leg1->AddEntry(hRecCW,"Rec","l");
-    leg1->AddEntry(hRecSelCW,"RecSel","l");
-    leg1->AddEntry(hWeightedWithUncertaintiesCrossTalkCW,"WeightedCrossTalk","l");
+    leg1->AddEntry(hObsCW,"observed","l");
+    leg1->AddEntry(hExpCW,"expected","l");
+    leg1->AddEntry(hUnfoldCW,"unfolded","l");
+    leg1->AddEntry(hRecCW,"frac. charges","l");
+//    leg1->AddEntry(hRecSelCW,"RecSel","l");
+//    leg1->AddEntry(hWeightedWithUncertaintiesCrossTalkCW,"WeightedCrossTalk","l");
     // leg1->AddEntry(hRecSelProbCW,"RecSelProb","l");
     leg1->Draw("SAME");
     c1->Write();
@@ -742,6 +796,16 @@ int main(){
     hRelDiff2Weighted->SetLineColor(42);
     hRelDiff23Weighted->SetLineColor(46);
     hRelDiff3Weighted->SetLineColor(8);
+    hRelDiff1->SetLineWidth(2);
+    hRelDiff12->SetLineWidth(2);
+    hRelDiff2->SetLineWidth(2);
+    hRelDiff23->SetLineWidth(2);
+    hRelDiff3->SetLineWidth(2);
+    hRelDiff1Weighted->SetLineWidth(2);
+    hRelDiff12Weighted->SetLineWidth(2);
+    hRelDiff2Weighted->SetLineWidth(2);
+    hRelDiff23Weighted->SetLineWidth(2);
+    hRelDiff3Weighted->SetLineWidth(2);
     // hRelDiff1Weighted->SetLineStyle(2);
     // hRelDiff12Weighted->SetLineStyle(2);
     // hRelDiff2Weighted->SetLineStyle(2);
@@ -781,8 +845,11 @@ int main(){
     c2->cd();
     hRelDiffCrossTalk_M->GetXaxis()->SetTitle("(RecWithDiffCrossTalk-RecSel)/RecSel Cluster Width");
     hRelDiffCrossTalk_P->SetLineColor(1);
+    hRelDiffCrossTalk_P->SetLineWidth(2);
     hRelDiffCrossTalk_M->SetLineColor(42);
+    hRelDiffCrossTalk_M->SetLineWidth(2);
     hRelDiffCrossTalkWeighted->SetLineColor(38);
+    hRelDiffCrossTalkWeighted->SetLineWidth(2);
     hRelDiffCrossTalk_M->Draw();
     hRelDiffCrossTalk_P->Draw("SAME");
     hRelDiffCrossTalkWeighted->Draw("SAME");
@@ -799,18 +866,23 @@ int main(){
 
     //--------- //Charge
     c3->cd();
+    hObsCharge->GetXaxis()->SetTitle("Charge");
     hObsCharge->SetLineColor(1);
     hUnfoldCharge->SetLineColor(38);
     hRecCharge->SetLineColor(46);
     hRecSelCharge->SetLineColor(8);
+    hObsCharge->SetLineWidth(2);
+    hUnfoldCharge->SetLineWidth(2);
+    hRecCharge->SetLineWidth(2);
+    hRecSelCharge->SetLineWidth(2);
     hObsCharge->Draw();
     hUnfoldCharge->Draw("SAME");
     hRecCharge->Draw("SAME");
-    hRecSelCharge->Draw("SAME");
-    leg4->AddEntry(hObsCharge,"Obs","l");
-    leg4->AddEntry(hUnfoldCharge,"Unfold","l");
-    leg4->AddEntry(hRecCharge,"Rec","l");
-    leg4->AddEntry(hRecSelCharge,"RecSel","l");
+//    hRecSelCharge->Draw("SAME");
+    leg4->AddEntry(hObsCharge,"observed","l");
+    leg4->AddEntry(hUnfoldCharge,"unfolded","l");
+    leg4->AddEntry(hRecCharge,"frac. charges","l");
+//    leg4->AddEntry(hRecSelCharge,"selected","l");
     leg4->Draw("SAME");
     c3->Write();
     c3->SaveAs((plotDir+"Charge.pdf").c_str());
@@ -828,16 +900,21 @@ int main(){
     hRelDiffRec->SetLineColor(46);
     hRelDiffRecSel->SetLineColor(8);
     hRelDiffWeight->SetLineColor(40);
+    hRelDiffObs->SetLineWidth(2);
+    hRelDiffUnfold->SetLineWidth(2);
+    hRelDiffRec->SetLineWidth(2);
+    hRelDiffRecSel->SetLineWidth(2);
+    hRelDiffWeight->SetLineWidth(2);
     hRelDiffObs->Draw();
     hRelDiffUnfold->Draw("SAME");
     hRelDiffRec->Draw("SAME");
-    hRelDiffRecSel->Draw("SAME");
-    hRelDiffWeight->Draw("SAME");
-    legRelDiff->AddEntry(hRelDiffObs,"Obs","l");
-    legRelDiff->AddEntry(hRelDiffUnfold,"Unfold","l");
-    legRelDiff->AddEntry(hRelDiffRec,"Rec","l");
-    legRelDiff->AddEntry(hRelDiffRecSel,"RecSel","l");
-    legRelDiff->AddEntry(hRelDiffWeight,"Weight","l");
+//    hRelDiffRecSel->Draw("SAME");
+//    hRelDiffWeight->Draw("SAME");
+    legRelDiff->AddEntry(hRelDiffObs,"observed","l");
+    legRelDiff->AddEntry(hRelDiffUnfold,"unfolded","l");
+    legRelDiff->AddEntry(hRelDiffRec,"frac. charges","l");
+//    legRelDiff->AddEntry(hRelDiffRecSel,"selected","l");
+//    legRelDiff->AddEntry(hRelDiffWeight,"weighted","l");
     legRelDiff->Draw("SAME");
     c2->Write();
     c2->SaveAs((plotDir+"RelDiff2.pdf").c_str());

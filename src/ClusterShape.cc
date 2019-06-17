@@ -212,9 +212,11 @@ vector<vector<double>> TotalClusterWidth(vector<double> Cluster, double QStrip){
         // add partial charges for edge strips, 1 for intermed strips
 
         ClusterWidth.push_back(min(Cluster[0]/QStrip,1));
+//        ClusterWidth.push_back(1);
         for(int j=1;j<Cluster.size()-1;j++){
             ClusterWidth.push_back(1);
         }
+//        ClusterWidth.push_back(1);
         ClusterWidth.push_back(min(Cluster[Cluster.size()-1]/QStrip,1));
 
     }
