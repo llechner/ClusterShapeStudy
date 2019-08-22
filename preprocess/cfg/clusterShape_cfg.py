@@ -3,7 +3,7 @@
 from CalibTracker.SiStripCommon.shallowTree_test_template import *
 import FWCore.ParameterSet.Config as cms
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
-process.TFileService.fileName = "../data/input.root"
+process.TFileService.fileName = "../data/input_v5.root"
 
 process.source = cms.Source (
     "PoolSource",
@@ -34,6 +34,8 @@ process.load("SimTracker.TrackAssociatorProducers.trackAssociatorByHits_cfi")
 process.tracksRefit = process.TrackRefitter.clone()
 process.shallowGainCalibration.Tracks = "tracksRefit"
 process.shallowTrackClusters.Tracks = "tracksRefit"
+process.shallowTracks.Tracks = "tracksRefit"
+process.shallowSimTracks.Tracks = "tracksRefit"
 
 process.testTree = cms.EDAnalyzer(
    "ShallowTree",
