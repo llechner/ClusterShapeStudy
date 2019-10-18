@@ -2,8 +2,13 @@
 
 from CalibTracker.SiStripCommon.shallowTree_test_template import *
 import FWCore.ParameterSet.Config as cms
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10000) )
-process.TFileService.fileName = "../data/input_v5.root"
+import FWCore.ParameterSet.VarParsing as VarParsing
+
+options = VarParsing.VarParsing ('standard')
+options.maxEvents=1000000000 # maxEvents is a registered option. 
+
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(options.maxEvents) )
+process.TFileService.fileName = "../data/input_v8_100k.root"
 
 process.source = cms.Source (
     "PoolSource",
