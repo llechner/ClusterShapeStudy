@@ -1,4 +1,5 @@
 clusterShape
 nohup.out
 *.root
-
+logs
+*tmp*
