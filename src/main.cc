@@ -33,9 +33,10 @@
 //#include "Geometry/Records/interface/TrackerTopologyRcd.h"
 
 
-bool PrintClusters = false;
+bool PrintClusters = true;
 bool PrintThresholds = false;
-const double ClusterThreshold=40; // based on observation, make that flexible?
+
+const double ClusterThreshold=20; // based on observation, make that flexible?
 const int MaxClusterThreshold=70; // based on observation, make that flexible?
 //const double ClusterThreshold=60.; // based on observation, make that flexible?
 
@@ -81,20 +82,65 @@ const int TECid=6;
 
 using namespace std;
 
-int main(){
+int main(int argc, char* argv[]){
+
+    cout << argv[1] << " " << argv[2] << " " << argv[3] << endl;
+
+    std::string argv1 = argv[1];
+    std::string argv2 = argv[2];
+    std::string argv3 = argv[3];
+
+    bool rh = argv1=="1";
+    bool sh = argv1=="2";
+
+    bool singleHit = argv2=="1";
+    bool doubleHit = argv2=="2";
+
+    bool tob = argv3=="1";
+    bool tib = argv3=="2";
+    bool tid = argv3=="3";
+    bool tec = argv3=="4";
 
     //------------------------------------ //Ouverture fichier+SetBranch
 
-    // const char *path="/eos/cms/store/group/dpg_tracker_strip/comm_tracker/Strip/Calibration/calibrationtree/GR17_Aag/";
-    //string filename="/eos/cms/store/group/dpg_tracker_strip/comm_tracker/Strip/Calibration/calibrationtree/GR17_Aag/calibTree_304777_25.root";
-    const string filename="data/input_v5.root";
+    const string filename="data/input_v7_100k.root";
     const string outfilename="data/results.root";
 
-    const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav4_v4_simhits2p_TEC/";
-//    const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav4_v4_simhits2p_TEC_dz005To04/";
-//    const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav4_v4_simhits2p_mesons_TOB/";
-//    const string plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav4_v4_simhits2p_TEC_dzGT04/";
+    string plotDir;
+
+    if      (tob && rh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_RH_np_TOB/";
+    else if (tib && rh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_RH_np_TIB/";
+    else if (tid && rh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_RH_np_TID/";
+    else if (tec && rh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_RH_np_TEC/";
+
+    else if (!tec && !tid && !tib && !tob && rh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_RH_np/";
+
+    else if (tob && sh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_SH_np_TOB/";
+    else if (tib && sh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_SH_np_TIB/";
+    else if (tid && sh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_SH_np_TID/";
+    else if (tec && sh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_SH_np_TEC/";
+
+    else if (!tec && !tid && !tib && !tob && sh && singleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1_SH_np/";
+
+    else if (tob && rh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_RH_np_TOB/";
+    else if (tib && rh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_RH_np_TIB/";
+    else if (tid && rh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_RH_np_TID/";
+    else if (tec && rh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_RH_np_TEC/";
+
+    else if (!tec && !tid && !tib && !tob && rh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_RH_np/";
+
+    else if (tob && sh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_SH_np_TOB/";
+    else if (tib && sh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_SH_np_TIB/";
+    else if (tid && sh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_SH_np_TID/";
+    else if (tec && sh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_SH_np_TEC/";
+
+    else if (!tec && !tid && !tib && !tob && sh && doubleHit) plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits2_SH_np/";
+
+    else plotDir="/afs/hephy.at/user/l/llechner/www/ClusterSplitting/MCbased_datav8_v1_simhits1p_np/";
+
     const string subPlotDir=plotDir+"/clusters/";
+
+    cout << plotDir << endl;
 
     try{
         std::experimental::filesystem::create_directory(plotDir);
@@ -128,6 +174,8 @@ int main(){
     std::vector<unsigned int>*GCWidth      = 0;
     std::vector<double>* GCLocalTrackPhi   = 0;
     std::vector<double>* GCLocalTrackTheta = 0;
+    std::vector<double>* TrackPhi   = 0;
+    std::vector<double>* TrackTheta = 0;
     std::vector<int>*GCSubdetid            = 0;
     std::vector<int>*GCLayerwheel          = 0;
     std::vector<unsigned int>*GCDetid      = 0;
@@ -151,13 +199,21 @@ int main(){
     std::vector<double>* clusterclusterCharge          = 0;
     std::vector<unsigned int>*clusterWidth      = 0;
     std::vector<int>*clusterSubdetid            = 0;
-    std::vector<int>*clusterLayerwheel          = 0;
+//    std::vector<int>*clusterLayerwheel          = 0;
     std::vector<unsigned int>*clusterDetid      = 0;
-    std::vector<double>* clusterLocalpitch      = 0;
+//    std::vector<double>* clusterLocalpitch      = 0;
     std::vector<double>* clusterSensorThickness = 0;
     std::vector<bool>*clusterSaturation         = 0;
     std::vector<bool>*clusterOverlapping        = 0;
 
+
+    std::vector<double>*driftx             = 0;
+    std::vector<double>*driftz             = 0;
+
+    std::vector<unsigned int>*strackID1 = 0;
+    std::vector<unsigned int>*strackID2 = 0;
+    std::vector<unsigned int>*strackID3 = 0;
+    std::vector<unsigned int>*strackID4 = 0;
 
     std::vector<unsigned int>*simstrip = 0;
     std::vector<double>*simtime1             = 0;
@@ -178,6 +234,11 @@ int main(){
     std::vector<double>*simenergyloss3      = 0;
     std::vector<double>*simenergyloss4      = 0;
 
+    std::vector<double>* simLocalPhi1   = 0;
+    std::vector<double>* simLocalTheta1   = 0;
+    std::vector<double>* simLocalPhi2   = 0;
+    std::vector<double>* simLocalTheta2   = 0;
+
     std::vector<double>* simLocalx1   = 0;
     std::vector<double>* simLocaly1   = 0;
     std::vector<double>* simLocalz1   = 0;
@@ -191,6 +252,8 @@ int main(){
     std::vector<double>* simLocalx4   = 0;
     std::vector<double>* simLocaly4   = 0;
     std::vector<double>* simLocalz4   = 0;
+
+    std::vector<int>* strackMulti   = 0;
 
     tree->SetBranchAddress("GainCalibrationstripidx",&GCStripIdx);
     tree->SetBranchAddress("GainCalibrationamplitude",&GCAmplitudes);
@@ -222,12 +285,24 @@ int main(){
     tree->SetBranchAddress("clustercharge",&clusterCharge);
     tree->SetBranchAddress("clusterwidth",&clusterWidth);
     tree->SetBranchAddress("clustersubdetid",&clusterSubdetid);
-    tree->SetBranchAddress("clusterlayerwheel",&clusterLayerwheel);
+//    tree->SetBranchAddress("clusterlayerwheel",&clusterLayerwheel);
     tree->SetBranchAddress("clusterdetid",&clusterDetid);
-    tree->SetBranchAddress("clusterlocalpitch",&clusterLocalpitch);
+//    tree->SetBranchAddress("clusterlocalpitch",&clusterLocalpitch);
     tree->SetBranchAddress("clusterthickness",&clusterSensorThickness);
     tree->SetBranchAddress("clustersaturation",&clusterSaturation);
     tree->SetBranchAddress("clusteroverlapping",&clusterOverlapping);
+
+    tree->SetBranchAddress("trackphi",&TrackPhi);
+    tree->SetBranchAddress("tracktheta",&TrackTheta);
+
+    tree->SetBranchAddress("tsosdriftx",&driftx);
+    tree->SetBranchAddress("tsosdriftz",&driftz);
+
+    tree->SetBranchAddress("simtrackMother",&strackID1);
+    tree->SetBranchAddress("simtrackMother2",&strackID2);
+    tree->SetBranchAddress("simtrackMother3",&strackID3);
+    tree->SetBranchAddress("simtrackMother4",&strackID4);
+
 
     tree->SetBranchAddress("simstrip",&simstrip);
     tree->SetBranchAddress("simtime",&simtime1);
@@ -237,6 +312,11 @@ int main(){
     tree->SetBranchAddress("simhits",&simhits);
     tree->SetBranchAddress("simlocalphi",&simLocalTrackPhi);
     tree->SetBranchAddress("simlocaltheta",&simLocalTrackTheta);
+
+    tree->SetBranchAddress("simlocalphi",&simLocalPhi1);
+    tree->SetBranchAddress("simlocaltheta",&simLocalTheta1);
+    tree->SetBranchAddress("simlocalphi2",&simLocalPhi2);
+    tree->SetBranchAddress("simlocaltheta2",&simLocalTheta2);
 
     tree->SetBranchAddress("simparticle",&simparticle1);
     tree->SetBranchAddress("simparticle2",&simparticle2);
@@ -261,6 +341,8 @@ int main(){
     tree->SetBranchAddress("simlocalx4",&simLocalx4);
     tree->SetBranchAddress("simlocaly4",&simLocaly4);
     tree->SetBranchAddress("simlocalz4",&simLocalz4);
+
+    tree->SetBranchAddress("strackmulti",&strackMulti);
 
     //------------------------------------ //Declarations
     TCanvas* c1=new TCanvas("c1","c1");
@@ -303,6 +385,8 @@ int main(){
     TCanvas* c37=new TCanvas("c37","c37");
     TCanvas* c38=new TCanvas("c38","c38");
     TCanvas* c39=new TCanvas("c39","c39");
+    TCanvas* c40=new TCanvas("c40","c40");
+    TCanvas* c41=new TCanvas("c41","c41");
     TLegend* leg1=new TLegend(0.65,0.65,0.9,0.9);
     TLegend* leg2=new TLegend(0.65,0.65,0.9,0.9);
     TLegend* leg3=new TLegend(0.65,0.65,0.9,0.9);
@@ -313,6 +397,8 @@ int main(){
     TLegend* leg8=new TLegend(0.65,0.75,0.9,0.9);
     TLegend* leg9=new TLegend(0.65,0.75,0.9,0.9);
     TLegend* leg10=new TLegend(0.65,0.65,0.9,0.9);
+    TLegend* leg11=new TLegend(0.65,0.65,0.9,0.9);
+    TLegend* leg12=new TLegend(0.65,0.65,0.9,0.9);
 
     TRandom3* r=new TRandom3();
 
@@ -336,6 +422,16 @@ int main(){
     TH1F* hzdistOverThick2=new TH1F("hzdistOverThick2","",50,0,1);
     TH1F* hzdistOverThick3=new TH1F("hzdistOverThick3","",50,0,1);
     TH1F* hzdistOverThick4=new TH1F("hzdistOverThick4","",50,0,1);
+
+    TH1F* hz1=new TH1F("hz1","",51,-0.03,0.03);
+    TH1F* hz2=new TH1F("hz2","",51,-0.03,0.03);
+    TH1F* hz3=new TH1F("hz3","",51,-0.03,0.03);
+    TH1F* hz4=new TH1F("hz4","",51,-0.03,0.03);
+
+    TH1F* hzOverThick1=new TH1F("hzOverThick1","",51,-1,1);
+    TH1F* hzOverThick2=new TH1F("hzOverThick2","",51,-1,1);
+    TH1F* hzOverThick3=new TH1F("hzOverThick3","",51,-1,1);
+    TH1F* hzOverThick4=new TH1F("hzOverThick4","",51,-1,1);
 
     TH1F* h2DdistOverThick2=new TH1F("h2DdistOverThick2","",50,0,1);
     TH1F* h2DdistOverThick3=new TH1F("h2DdistOverThick3","",50,0,1);
@@ -363,7 +459,12 @@ int main(){
     TH1F* hzlocaldist3=new TH1F("hzlocaldist3","",50,0,0.03);
     TH1F* hzlocaldist4=new TH1F("hzlocaldist4","",50,0,0.03);
     TH1F* hsimhits=new TH1F("hsimhits","",3,1,4);
-
+    TH1F* hcuthits=new TH1F("hcuthits","",3,1,4);
+    TH1F* hcuthits10=new TH1F("hcuthits10","",3,1,4);
+    TH1F* hcuthits20=new TH1F("hcuthits20","",3,1,4);
+    TH1F* hcuthits30=new TH1F("hcuthits30","",3,1,4);
+    TH1F* hcuthits40=new TH1F("hcuthits40","",3,1,4);
+    
     TH1F* hwheelratio=new TH1F("hwheelratio","",9,1,10);
     TH1F* hwheel=new TH1F("hwheel","",9,1,10);
     TH1F* hwheel1=new TH1F("hwheel1","",9,1,10);
@@ -379,6 +480,7 @@ int main(){
     // TH1F* hExpCW=new TH1F("hExpCW","",200,0,8);
     TH1F* hUnfoldCW=new TH1F("hUnfoldCW","",8,range);
     TH1F* hRecCW=new TH1F("hRecCW","",8,range);
+    TH1F* hSplitCW=new TH1F("hSplitCW","",8,range);
     TH1F* hRecSelCW=new TH1F("hRecSelCW","",8,range);
     TH1F* hRecSelCWUncert_P=new TH1F("hRecSelCWUncert_P","",8,range);
     TH1F* hRecSelCWUncert_M=new TH1F("hRecSelCWUncert_M","",8,range);
@@ -393,30 +495,35 @@ int main(){
     TH1F* hObsCharge=new TH1F("hObsCharge","",50,0,600);
     TH1F* hUnfoldCharge=new TH1F("hUnfoldCharge","",50,0,600);
     TH1F* hRecCharge=new TH1F("hRecCharge","",50,0,600);
+    TH1F* hSplitCharge=new TH1F("hSplitCharge","",50,0,600);
     TH1F* hRecSelCharge=new TH1F("hRecSelCharge","",50,0,600);
 
     TH1F* hRelDiffObs=new TH1F("hRelDiffObs","",100,-2,6);
     TH1F* hRelDiffUnfold=new TH1F("hRelDiffUnfold","",100,-2,6);
     TH1F* hRelDiffRec=new TH1F("hRelDiffRec","",100,-2,6);
     TH1F* hRelDiffRecSel=new TH1F("hRelDiffRecSel","",100,-2,6);
+    TH1F* hRelDiffSplit=new TH1F("hRelDiffSplit","",100,-2,6);
     TH1F* hRelDiffWeight=new TH1F("hRelDiffWeight","",100,-2,6);
 
     TH1F* hMeanRelDiffObs=new TH1F("hMeanRelDiffObs","",100,-2,6);
     TH1F* hMeanRelDiffUnfold=new TH1F("hMeanRelDiffUnfold","",100,-2,6);
     TH1F* hMeanRelDiffRec=new TH1F("hMeanRelDiffRec","",100,-2,6);
     TH1F* hMeanRelDiffRecSel=new TH1F("hMeanRelDiffRecSel","",100,-2,6);
+    TH1F* hMeanRelDiffSplit=new TH1F("hMeanRelDiffSplit","",100,-2,6);
     TH1F* hMeanRelDiffWeight=new TH1F("hMeanRelDiffWeight","",100,-2,6);
 
     TH1F* hRelDiffThreshObs=new TH1F("hRelDiffThreshObs","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hRelDiffThreshUnfold=new TH1F("hRelDiffThreshUnfold","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hRelDiffThreshRec=new TH1F("hRelDiffThreshRec","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hRelDiffThreshRecSel=new TH1F("hRelDiffThreshRecSel","",MaxClusterThreshold,0,MaxClusterThreshold);
+    TH1F* hRelDiffThreshSplit=new TH1F("hRelDiffThreshSplit","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hRelDiffThreshWeight=new TH1F("hRelDiffThreshWeight","",MaxClusterThreshold,0,MaxClusterThreshold);
 
     TH1F* hWidthThreshObs=new TH1F("hWidthThreshObs","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hWidthThreshUnfold=new TH1F("hWidthThreshUnfold","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hWidthThreshRec=new TH1F("hWidthThreshRec","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hWidthThreshRecSel=new TH1F("hWidthThreshRecSel","",MaxClusterThreshold,0,MaxClusterThreshold);
+    TH1F* hWidthThreshSplit=new TH1F("hWidthThreshSplit","",MaxClusterThreshold,0,MaxClusterThreshold);
     TH1F* hWidthThreshWeight=new TH1F("hWidthThreshWeight","",MaxClusterThreshold,0,MaxClusterThreshold);
 
     TH1F* hRelDiff=new TH1F("hRelDiff","",100,-2,6);
@@ -470,11 +577,27 @@ int main(){
     int ntracks=0.;
     int trkidx=0.;
     int shits=0.;
+    int cuthits=0.;
+    int cuthits10=0.;
+    int cuthits20=0.;
+    int cuthits30=0.;
+    int cuthits40=0.;
+    int hits=0.;
+
+    int sntracks=0.;
 
     int pdg1=-999;
     int pdg2=-999;
     int pdg3=-999;
     int pdg4=-999;
+
+    double drift_x=0.;
+    double drift_z=0.;
+    double tan_L=0.;
+    double theta=0.;
+    double trtheta=0.;
+    double phi=0.;
+    double trphi=0.;
 
     double eLoss1=0.;
     double eLoss2=0.;
@@ -487,6 +610,7 @@ int main(){
     double UnfoldCW=0.;
     double Unfold13CW=0.;
     double RecCW=0.;
+    double SplitCW=0.;
     double RecSelCW=0.;
     double RecSelCWUncert_P=0.;
     double RecSelCWUncert_M=0.;
@@ -497,11 +621,13 @@ int main(){
     double UnfoldCharge=0.;
     double RecCharge=0.;
     double RecSelCharge=0.;
+    double SplitCharge=0.;
 
     double RelDiffObs=0.;
     double RelDiffUnfold=0.;
     double RelDiffRec=0.;
     double RelDiffRecSel=0.;
+    double RelDiffSplit=0.;
     double RelDiffWeight=0.;
     double RelDiff=0.;
     double RelDiff1=0.;
@@ -540,6 +666,13 @@ int main(){
     double localdist2d3=0.;
     double localdist2d4=0.;
 
+    double dR=0.;
+    double dPhi=0.;
+    double sphi1=0.;
+    double stheta1=0.;
+    double sphi2=0.;
+    double stheta2=0.;
+
     double slx1=0.;
     double sly1=0.;
     double slz1=0.;
@@ -552,6 +685,15 @@ int main(){
     double slx4=0.;
     double sly4=0.;
     double slz4=0.;
+    double t1=0.;
+    double t2=0.;
+    double t3=0.;
+    double t4=0.;
+
+    int trID1=0;
+    int trID2=0;
+    int trID3=0;
+    int trID4=0;
 
     std::vector<int> clusterIds;
     clusterIds.reserve(10000);
@@ -565,6 +707,10 @@ int main(){
     std::vector<double> QUnfoldProb;
 
     std::vector<std::vector<double>> Cluster;
+    std::vector<std::vector<double>> Cluster10;
+    std::vector<std::vector<double>> Cluster20;
+    std::vector<std::vector<double>> Cluster30;
+    std::vector<std::vector<double>> Cluster40;
     std::vector<std::vector<double>> Cluster13;
     std::vector<double> UnderCluster;
 
@@ -686,10 +832,18 @@ int main(){
                 ntracks=tsostrackmulti->at(c);
                 trkidx=tsostrackindex->at(c);
 
+                drift_x=driftx->at(c);
+                drift_z=driftz->at(c);
+                tan_L=-drift_x/drift_z; //tan(lorentzangle)
+
+                sntracks=strackMulti->at(trkidx);
+                phi=GCLocalTrackPhi->at(c);
+                theta=GCLocalTrackTheta->at(c);
+
                 sstrip=simstrip->at(tcIdx);
                 shits=simhits->at(tcIdx);
                 subdet=clusterSubdetid->at(tcIdx);
-                wheel=clusterLayerwheel->at(tcIdx);
+                wheel=GCLayerwheel->at(c);
 
                 ObsCW=clusterWidth->at(tcIdx);
                 ObsCharge=clusterclusterCharge->at(tcIdx); //Sum(q);
@@ -699,19 +853,15 @@ int main(){
                 pdg3 = simparticle3->at(tcIdx);
                 pdg4 = simparticle4->at(tcIdx);
 
-                // Only mesons in merged clusters
-//                if( abs(pdg1)<30 || abs(pdg2)<30 || abs(pdg3)<30 || abs(pdg4)<30 ) continue;
+                if (tob && GCSubdetid->at(c) != TOBid) continue;
+                if (tib && GCSubdetid->at(c) != TIBid) continue;
+                if (tid && GCSubdetid->at(c) != TIDid) continue;
+                if (tec && GCSubdetid->at(c) != TECid) continue;
 
-//                cout<<"p1 "<<pdg1<<" dz1 "<<slz1<<" p2 "<<pdg2<<" dz2 "<<slz2<<" p3 "<<pdg3<<" dz3 "<<slz3<<" p4 "<<pdg4<<" dz4 "<<slz4<<endl;
-//                if(shits != 1) continue;
-                if(shits < 2) continue;
-//                if(shits < 1) continue;
+                if (singleHit && shits != 1) continue;
+                if (doubleHit && shits != 2) continue;
+                if (shits == 0) continue;
 
-//                if (GCSubdetid->at(c) != TOBid) continue;
-//                if (GCSubdetid->at(c) != TIBid) continue;
-//                if (GCSubdetid->at(c) != TIDid) continue;
-                if (GCSubdetid->at(c) != TECid) continue;
-                //eLossTot = 0;
 
                 if(shits > 0) {
                     eLoss1 = simenergyloss1->at(tcIdx)*1000000;
@@ -719,44 +869,45 @@ int main(){
                 }
                 if(shits > 1) {
                     eLoss2 = simenergyloss2->at(tcIdx)*1000000;
-//                    eLossTot += eLoss2;
                 }
                 if(shits > 2) {
                     eLoss3 = simenergyloss3->at(tcIdx)*1000000;
-//                    eLossTot += eLoss3;
                 }
                 if(shits > 3) {
                     eLoss4 = simenergyloss4->at(tcIdx)*1000000;
-//                    eLossTot += eLoss4;
                 }
-
-//                cout<<"ELoss1 "<<eLoss1<<endl;
-//                cout<<"ELoss2 "<<eLoss2<<endl;
-//                cout<<"ObsCharge "<<ObsCharge<<endl;
-//                cout<<endl;
 
                 thick = GCSensorThickness->at(c);
 
                 if(shits > 0) {
+                    sphi1 = simLocalPhi1->at(tcIdx);
+                    stheta1 = simLocalTheta1->at(tcIdx);
                     slx1 = simLocalx1->at(tcIdx);
                     sly1 = simLocaly1->at(tcIdx);
                     slz1 = simLocalz1->at(tcIdx);
+                    t1   = simtime1->at(tcIdx);
+                    trID1   = strackID1->at(tcIdx);
                 }
                 if(shits > 1) {
+                    sphi2 = simLocalPhi2->at(tcIdx);
+                    stheta2 = simLocalTheta2->at(tcIdx);
                     slx2 = simLocalx2->at(tcIdx);
                     sly2 = simLocaly2->at(tcIdx);
                     slz2 = simLocalz2->at(tcIdx);
+                    t2   = simtime2->at(tcIdx);
+                    trID2   = strackID2->at(tcIdx);
                     localdist2d2 = sqrt( pow((slx1-slx2), 2) + pow((sly1-sly2), 2) );
                     zlocaldist2 = abs(slz1-slz2);
                     localdist2 = sqrt( pow((slx1-slx2), 2) + pow((sly1-sly2), 2) + pow((slz1-slz2), 2) );
                     deltaT12 = simtime2->at(tcIdx) - simtime1->at(tcIdx);
-//                    if(deltaT12<0.00001) cout<<deltaT12<<" "<<localdist2<<endl;
                     deltaV = thick / deltaT12;
                 }
                 if(shits > 2) {
                     slx3 = simLocalx3->at(tcIdx);
                     sly3 = simLocaly3->at(tcIdx);
                     slz3 = simLocalz3->at(tcIdx);
+                    t3   = simtime3->at(tcIdx);
+                    trID3   = strackID3->at(tcIdx);
                     localdist2d3 = sqrt( pow((slx1-slx3), 2) + pow((sly1-sly3), 2) );
                     zlocaldist3 = abs(slz1-slz3);
                     localdist3 = sqrt( pow((slx1-slx3), 2) + pow((sly1-sly3), 2) + pow((slz1-slz3), 2) );
@@ -766,18 +917,40 @@ int main(){
                     slx4 = simLocalx4->at(tcIdx);
                     sly4 = simLocaly4->at(tcIdx);
                     slz4 = simLocalz4->at(tcIdx);
+                    t4   = simtime4->at(tcIdx);
+                    trID4   = strackID4->at(tcIdx);
                     localdist2d4 = sqrt( pow((slx1-slx4), 2) + pow((sly1-sly4), 2) );
                     zlocaldist4 = abs(slz1-slz4);
                     localdist4 = sqrt( pow((slx1-slx4), 2) + pow((sly1-sly4), 2) + pow((slz1-slz4), 2) );
                     deltaT14 = simtime4->at(tcIdx) - simtime1->at(tcIdx);
                 }
 
-//                if(zlocaldist2/thick > 0.4 || zlocaldist2/thick < 0.05) continue;
-//                if(zlocaldist2/thick < 0.4) continue;
-//                if(zlocaldist2/thick > 0.05) continue;
+
+                if (rh && shits > 1) {
+                    if(trID1 == trID2) continue; // real merged cluster
+                    if(shits > 2 && trID1 == trID3) continue; // real merged cluster
+                    if(shits > 2 && trID2 == trID3) continue; // real merged cluster
+                }
+
+                else if (sh && shits > 1) {
+                    if(shits == 2 && trID1 != trID2) continue; // secondary hit
+                    if(shits > 2 && !(trID1 == trID3 || trID2 == trID3 || trID1 == trID2)) continue; // secondary hit
+                    if(shits == 2 && pdg1 == pdg2) continue; // secondary hit
+                    if(shits > 2 && !(pdg1 == pdg3 || pdg2 == pdg3 || pdg1 == pdg2)) continue; // secondary hit
+                }
+
+//                if(shits == 2 && trID1 != trID2) continue; // double hit
+//                if(shits > 2 && !(trID1 == trID3 || trID2 == trID3 || trID1 == trID2)) continue; // double hit
+//                if(shits == 2 && pdg1 != pdg2) continue; // double hit
+//                if(shits > 2 && !(pdg1 == pdg3 || pdg2 == pdg3 || pdg1 == pdg2)) continue; // double hit
+
+
+                if(shits > 0) {
+                    hSimCharge->Fill(eLossTot);
+                }
 
                 if(th==ClusterThreshold){
-                     hsimhits->Fill(shits);
+//                     hsimhits->Fill(shits);
                     if(shits == 1){
                         hsubdet1->Fill(subdet);
                         hsubdet->Fill(subdet);
@@ -800,12 +973,14 @@ int main(){
                     }
                 }
 
-
-//                if(zlocaldist2/thick>0.05) continue;
-
-                double theta_L = 0.02;
-                ExpCW= abs( tan(theta_L) + cos(GCLocalTrackPhi->at(c)) * tan(GCLocalTrackTheta->at(c)) ) * thick / GCLocalpitch->at(c);
-
+//                double theta_L = 0.02;
+//                ExpCW= abs( tan(theta_L) + cos(GCLocalTrackPhi->at(c)) * tan(GCLocalTrackTheta->at(c)) ) * thick / GCLocalpitch->at(c);
+                if(GCSubdetid->at(c)==TIDid || GCSubdetid->at(c)==TECid){
+//                    ExpCW= abs( sin(phi) * tan(theta) ) * thick / GCLocalpitch->at(c);
+                    ExpCW= abs( tan(theta) ) * thick / GCLocalpitch->at(c);
+                } else {
+                    ExpCW= abs( tan_L + cos(phi) * tan(theta) ) * thick / GCLocalpitch->at(c);
+                }
 
                 double s1b=UncertaintyCrossTalk(x0,s0,x1,x2);
                 QUnfold=Unfold(q,x0,x1,x2);
@@ -824,6 +999,16 @@ int main(){
 
                 QUnfoldProb=Unfold(q,x0prob,x1prob,x2prob);
                 Cluster=Cutting(Threshold(QUnfold,th));
+                cuthits=Cluster.size();
+
+                Cluster10=Cutting(Threshold(QUnfold,10));
+                Cluster20=Cutting(Threshold(QUnfold,20));
+                Cluster30=Cutting(Threshold(QUnfold,30));
+                Cluster40=Cutting(Threshold(QUnfold,40));
+                cuthits10=Cluster10.size();
+                cuthits20=Cluster20.size();
+                cuthits30=Cluster30.size();
+                cuthits40=Cluster40.size();
                 UnfoldCharge=Sum(Threshold(QUnfold,th));
 
                 if(Cluster.size()==0) cerr<<"Warning"<<"\tEvent "<<i<<"\tCluster"<<c<<endl;
@@ -831,6 +1016,12 @@ int main(){
 
                 for(unsigned int i=0;i<Cluster.size();i++){
                     UnfoldCW += Cluster[i].size();
+                    SplitCW = Cluster[i].size();
+                    hSplitCW->Fill(SplitCW);
+                    SplitCharge = Sum(Cluster[i]);
+                    hSplitCharge->Fill(SplitCharge);
+                    RelDiffSplit=(double)(SplitCW-ExpCW)/ExpCW;
+                    hRelDiffSplit->Fill(RelDiffSplit);
                 }
 
                 k=Cluster.size();
@@ -859,6 +1050,8 @@ int main(){
                 RecSelCWUncert_P=TotalClusterWidthAfterTreatment(QUnfold_P,UncertQS,GCPath,c,th)[0];
                 RecSelCWUncert_M=TotalClusterWidthAfterTreatment(QUnfold_M,UncertQS,GCPath,c,th)[0];
 
+                WeightedWithUncertaintiesCrossTalkCW=0.5*RecSelCW+0.25*(RecSelCWUncert_M+RecSelCWUncert_P);
+
                 RelDiffObs=(double)(ObsCW-ExpCW)/ExpCW;
                 RelDiffRec=(double)(RecCW-ExpCW)/ExpCW;
                 RelDiffRecSel=(double)(RecSelCW-ExpCW)/ExpCW;
@@ -866,7 +1059,6 @@ int main(){
                 RelDiffWeight=(double)(WeightedWithUncertaintiesCrossTalkCW-ExpCW)/ExpCW;
                 RelDiffCrossTalk_P=(double)(RecSelCWUncert_P-RecSelCW)/RecSelCW;
                 RelDiffCrossTalk_M=(double)(RecSelCWUncert_M-RecSelCW)/RecSelCW;
-                WeightedWithUncertaintiesCrossTalkCW=0.5*RecSelCW+0.25*(RecSelCWUncert_M+RecSelCWUncert_P);
                 RelDiffCrossTalkProb=(double)(RecSelProbCW-ExpCW)/ExpCW;
                 RelDiffCrossTalkWeighted=(double)(WeightedWithUncertaintiesCrossTalkCW-RecSelCW)/RecSelCW;
 
@@ -898,8 +1090,6 @@ int main(){
 
                 vector<double> ClusterSel=ClusterizationWithNoise(UnderCluster,QStrip,UncertQS);
 
-//                if(Unfold13CW != UnfoldCW && PrintClusters && Cluster.size()!=0){
-//                    cout<<"13 "<<Unfold13CW<<" th "<<UnfoldCW<<" c "<<c<<endl;
                 if(PrintClusters){
 
                     title.str("");
@@ -1013,7 +1203,6 @@ int main(){
                     pClusterSel->Draw();
                     c4->SaveAs((subPlotDir+"chargeCluster_"+to_string(c)+".pdf").c_str());
                     c4->SaveAs((subPlotDir+"chargeCluster_"+to_string(c)+".png").c_str());
-//                    getchar();
                     pObsCluster->Reset();
                     pUnfoldCluster->Reset();
                     pUnderCluster->Reset();
@@ -1032,7 +1221,11 @@ int main(){
 
                 if(th==ClusterThreshold){
 
+                    hz1->Fill(slz1);
+                    hzOverThick1->Fill(slz1/thick);
                     if(shits > 1){
+                        hz2->Fill(slz2);
+                        hzOverThick2->Fill(slz2/thick);
                         hzlocaldist2->Fill(zlocaldist2);
                         h2Dlocaldist2->Fill(localdist2d2);
                         h2DdistOverThick2->Fill(localdist2d2/thick);
@@ -1044,6 +1237,8 @@ int main(){
                         hdeltaV->Fill(deltaV);
                     }
                     if(shits > 2) {
+                        hz3->Fill(slz3);
+                        hzOverThick3->Fill(slz3/thick);
                         hzlocaldist3->Fill(zlocaldist3);
                         h2Dlocaldist3->Fill(localdist2d3);
                         h2DdistOverThick3->Fill(localdist2d3/thick);
@@ -1054,6 +1249,8 @@ int main(){
                         hdeltaT13det->Fill(abs(deltaT13));
                     }
                     if(shits > 3) {
+                        hz4->Fill(slz4);
+                        hzOverThick4->Fill(slz4/thick);
                         hzlocaldist4->Fill(zlocaldist4);
                         h2Dlocaldist4->Fill(localdist2d4);
                         h2DdistOverThick4->Fill(localdist2d4/thick);
@@ -1063,7 +1260,13 @@ int main(){
                         hdeltaT14->Fill(abs(deltaT14));
                         hdeltaT14det->Fill(abs(deltaT14));
                     }
-                    //hsimhits->Fill(shits);
+                    hsimhits->Fill(shits);
+
+                    hcuthits->Fill(cuthits);
+                    hcuthits10->Fill(cuthits10);
+                    hcuthits20->Fill(cuthits20);
+                    hcuthits30->Fill(cuthits30);
+                    hcuthits40->Fill(cuthits40);
 
                     hnTracks->Fill(ntracks);
                     hObsCW->Fill(ObsCW);
@@ -1085,7 +1288,6 @@ int main(){
                     hWeightedWithUncertaintiesCrossTalkCW->Fill(WeightedWithUncertaintiesCrossTalkCW);
                     hRecSelProbCW->Fill(RecSelProbCW);
                     hObsCharge->Fill(ObsCharge);
-                    hSimCharge->Fill(eLossTot);
                     hSim1Charge->Fill(eLoss1);
                     hSim2Charge->Fill(eLoss2);
                     hSim3Charge->Fill(eLoss3);
@@ -1102,6 +1304,39 @@ int main(){
                     hRelDiffWeight->Fill(RelDiffWeight);
 
                 }
+
+                tan_L=0;
+                theta=0;
+                drift_x=0;
+                drift_z=0;
+                sphi1=0.;
+                stheta1=0.;
+                sphi2=0.;
+                stheta2=0.;
+
+                t2=0.;
+                t3=0.;
+                t4=0.;
+                slz1=0.;
+                slz2=0.;
+                slz3=0.;
+                slz4=0.;
+                slx1=0.;
+                slx2=0.;
+                slx3=0.;
+                slx4=0.;
+                sly1=0.;
+                sly2=0.;
+                sly3=0.;
+                sly4=0.;
+                deltaT12=0.;
+                deltaT13=0.;
+                deltaT14=0.;
+
+                trID1=0;
+                trID2=0;
+                trID3=0;
+                trID4=0;
 
                 zlocaldist2=0;
                 zlocaldist3=0;
@@ -1205,6 +1440,11 @@ int main(){
     hsubdet2p->Write();
 
     hsimhits->Write();
+    hcuthits->Write();
+    hcuthits10->Write();
+    hcuthits20->Write();
+    hcuthits30->Write();
+    hcuthits40->Write();
     hdistOverThick2->Write();
     hdistOverThick3->Write();
     hdistOverThick4->Write();
@@ -1238,6 +1478,7 @@ int main(){
     hExpCW->Write();
     hUnfoldCW->Write();
     hRecCW->Write();
+    hSplitCW->Write();
     hRecSelCW->Write();
     hRecSelCWUncert_P->Write();
     hRecSelCWUncert_M->Write();
@@ -1261,12 +1502,14 @@ int main(){
     hObsCharge->Write();
     hUnfoldCharge->Write();
     hRecCharge->Write();
+    hSplitCharge->Write();
     hRecSelCharge->Write();
     hdEdx->Write();
 
     hRelDiffObs->Write();
     hRelDiffUnfold->Write();
     hRelDiffRec->Write();
+    hRelDiffSplit->Write();
     hRelDiffRecSel->Write();
     hRelDiffWeight->Write();
 
@@ -1363,10 +1606,12 @@ int main(){
     hRecCW->SetLineWidth(3);
     hRecSelCW->SetLineColor(8);
     hRecSelCW->SetLineWidth(3);
-    hWeightedWithUncertaintiesCrossTalkCW->SetLineColor(40);
-    hWeightedWithUncertaintiesCrossTalkCW->SetLineWidth(3);
-    hRecSelProbCW->SetLineColor(28);
-    hRecSelProbCW->SetLineWidth(3);
+    hSplitCW->SetLineColor(40);
+    hSplitCW->SetLineWidth(3);
+//    hWeightedWithUncertaintiesCrossTalkCW->SetLineColor(40);
+//    hWeightedWithUncertaintiesCrossTalkCW->SetLineWidth(3);
+//    hRecSelProbCW->SetLineColor(28);
+//    hRecSelProbCW->SetLineWidth(3);
 
     hExpCW->GetXaxis()->SetLabelSize(0.045);
     hExpCW->GetYaxis()->SetLabelSize(0.045);
@@ -1377,14 +1622,16 @@ int main(){
     hObsCW->Draw("SAME");
     hUnfoldCW->Draw("SAME");
     hRecCW->Draw("SAME");
-//    hRecSelCW->Draw("SAME");
+    hRecSelCW->Draw("SAME");
+    hSplitCW->Draw("SAME");
 //    hWeightedWithUncertaintiesCrossTalkCW->Draw("SAME");
     // hRecSelProbCW->Draw("SAME");
     leg1->AddEntry(hObsCW,"Observed","l");
     leg1->AddEntry(hExpCW,"Expected","l");
     leg1->AddEntry(hUnfoldCW,"Unfolded","l");
-    leg1->AddEntry(hRecCW,"Reconstructed","l");
-//    leg1->AddEntry(hRecSelCW,"RecSel","l");
+    leg1->AddEntry(hRecCW,"Part. Edge Charges","l");
+    leg1->AddEntry(hRecSelCW,"Max Charge Sel.","l");
+    leg1->AddEntry(hSplitCW,"Splitted","l");
 //    leg1->AddEntry(hWeightedWithUncertaintiesCrossTalkCW,"WeightedCrossTalk","l");
     // leg1->AddEntry(hRecSelProbCW,"RecSelProb","l");
     leg1->Draw("SAME");
@@ -1800,9 +2047,20 @@ int main(){
     c13->SetLogy();
 
     hsimhits->GetYaxis()->SetTitle("#Events");
-    hsimhits->GetXaxis()->SetTitle("Simulated Hits");
+    hsimhits->GetXaxis()->SetTitle("#Hits");
     hsimhits->SetLineColor(38);
     hsimhits->SetLineWidth(3);
+    hcuthits->SetLineColor(8);
+    hcuthits->SetLineWidth(3);
+
+    hcuthits10->SetLineColor(1);
+    hcuthits10->SetLineWidth(3);
+    hcuthits20->SetLineColor(42);
+    hcuthits20->SetLineWidth(3);
+    hcuthits30->SetLineColor(46);
+    hcuthits30->SetLineWidth(3);
+    hcuthits40->SetLineColor(40);
+    hcuthits40->SetLineWidth(3);
 
     hsimhits->GetXaxis()->SetLabelSize(0.06);
     hsimhits->GetYaxis()->SetLabelSize(0.045);
@@ -1814,12 +2072,22 @@ int main(){
     hsimhits->GetXaxis()->SetBinLabel( 3, "3 hits" );
 
     hsimhits->Draw();
-//    leg8->AddEntry(hwheel2p,"SimHits > 1","l");
-//    leg8->Draw("SAME");
+    hcuthits10->Draw("SAME");
+    hcuthits20->Draw("SAME");
+    hcuthits30->Draw("SAME");
+    hcuthits40->Draw("SAME");
+//    hcuthits->Draw("SAME");
+    leg12->AddEntry(hsimhits,"sim. hits","l");
+//    leg12->AddEntry(hcuthits,"rec. hits","l");
+    leg12->AddEntry(hcuthits10,"rec. hits (th=10)","l");
+    leg12->AddEntry(hcuthits20,"rec. hits (th=20)","l");
+    leg12->AddEntry(hcuthits30,"rec. hits (th=30)","l");
+    leg12->AddEntry(hcuthits40,"rec. hits (th=40)","l");
+    leg12->Draw("SAME");
     c13->Write();
     gStyle->SetOptStat(0);
-    c13->SaveAs((plotDir+"simhits.pdf").c_str());
-    c13->SaveAs((plotDir+"simhits.png").c_str());
+    c13->SaveAs((plotDir+"hits.pdf").c_str());
+    c13->SaveAs((plotDir+"hits.png").c_str());
 
     //---------
 
@@ -2254,6 +2522,83 @@ int main(){
 
     //---------
 
+    c40->cd();
+    c40->SetLogy();
+    c40->SetLeftMargin(0.15);
+    c40->SetBottomMargin(0.15);
+
+    hz1->GetYaxis()->SetTitle("#Events");
+    hz1->GetXaxis()->SetTitle("Hit Position (z)");
+    hz1->SetLineColor(38);
+    hz1->SetLineWidth(3);
+
+    hz1->GetXaxis()->SetLabelSize(0.045);
+    hz1->GetYaxis()->SetLabelSize(0.045);
+    hz1->GetXaxis()->SetTitleSize(0.045);
+    hz1->GetYaxis()->SetTitleSize(0.045);
+
+    hz1->SetLineColor(1);
+    hz1->SetLineWidth(3);
+    hz2->SetLineColor(38);
+    hz2->SetLineWidth(3);
+    hz3->SetLineColor(46);
+    hz3->SetLineWidth(3);
+    hz4->SetLineColor(8);
+    hz4->SetLineWidth(3);
+
+    hz1->Draw();
+    hz2->Draw("SAME");
+    hz3->Draw("SAME");
+    hz4->Draw("SAME");
+
+    leg11->AddEntry(hz1,"SimHit 1","l");
+    leg11->AddEntry(hz2,"SimHit 2","l");
+    leg11->AddEntry(hz3,"SimHit 3","l");
+    leg11->AddEntry(hz4,"SimHit 4","l");
+    leg11->Draw("SAME");
+
+    c40->Write();
+    gStyle->SetOptStat(0);
+    c40->SaveAs((plotDir+"simhits_z.pdf").c_str());
+    c40->SaveAs((plotDir+"simhits_z.png").c_str());
+
+
+    c41->cd();
+    c41->SetLogy();
+    c41->SetLeftMargin(0.15);
+    c41->SetBottomMargin(0.15);
+
+    hzOverThick1->GetYaxis()->SetTitle("#Events");
+    hzOverThick1->GetXaxis()->SetTitle("Hit Position (z) / Sensor Thickness");
+    hzOverThick1->SetLineColor(38);
+    hzOverThick1->SetLineWidth(3);
+
+    hzOverThick1->GetXaxis()->SetLabelSize(0.045);
+    hzOverThick1->GetYaxis()->SetLabelSize(0.045);
+    hzOverThick1->GetXaxis()->SetTitleSize(0.045);
+    hzOverThick1->GetYaxis()->SetTitleSize(0.045);
+
+    hzOverThick1->SetLineColor(1);
+    hzOverThick1->SetLineWidth(3);
+    hzOverThick2->SetLineColor(38);
+    hzOverThick2->SetLineWidth(3);
+    hzOverThick3->SetLineColor(46);
+    hzOverThick3->SetLineWidth(3);
+    hzOverThick4->SetLineColor(8);
+    hzOverThick4->SetLineWidth(3);
+
+    hzOverThick1->Draw();
+    hzOverThick2->Draw("SAME");
+    hzOverThick3->Draw("SAME");
+    hzOverThick4->Draw("SAME");
+
+    leg11->Draw("SAME");
+
+    c41->Write();
+    gStyle->SetOptStat(0);
+    c41->SaveAs((plotDir+"simhits_zOverThick.pdf").c_str());
+    c41->SaveAs((plotDir+"simhits_zOverThick.png").c_str());
+
     if(PrintThresholds){
         //--------- //RelDiff in thresh
 
@@ -2273,8 +2618,10 @@ int main(){
         hRelDiffThreshRec->SetLineWidth(3);
         hRelDiffThreshRecSel->SetLineColor(8);
         hRelDiffThreshRecSel->SetLineWidth(3);
-        hRelDiffThreshWeight->SetLineColor(40);
-        hRelDiffThreshWeight->SetLineWidth(3);
+//        hRelDiffThreshWeight->SetLineColor(40);
+//        hRelDiffThreshWeight->SetLineWidth(3);
+        hRelDiffThreshSplit->SetLineColor(40);
+        hRelDiffThreshSplit->SetLineWidth(3);
         hRelDiffThreshObs->GetYaxis()->SetRangeUser(0,1);
 
         hRelDiffThreshObs->GetXaxis()->SetLabelSize(0.045);
@@ -2285,12 +2632,14 @@ int main(){
         hRelDiffThreshObs->Draw();
         hRelDiffThreshUnfold->Draw("SAME");
         hRelDiffThreshRec->Draw("SAME");
-//        hRelDiffThreshRecSel->Draw("SAME");
+        hRelDiffThreshRecSel->Draw("SAME");
+        hRelDiffThreshSplit->Draw("SAME");
 //        hRelDiffThreshWeight->Draw("SAME");
         legRelDiffThresh->AddEntry(hRelDiffThreshObs,"Observed","l");
         legRelDiffThresh->AddEntry(hRelDiffThreshUnfold,"Unfolded","l");
-        legRelDiffThresh->AddEntry(hRelDiffThreshRec,"Reconstructed","l");
-//        legRelDiffThresh->AddEntry(hRelDiffThreshRecSel,"RecSel","l");
+        legRelDiffThresh->AddEntry(hRelDiffThreshRec,"Part. Edge Charges","l");
+        legRelDiffThresh->AddEntry(hRelDiffThreshRecSel,"Max Charge Sel.","l");
+        legRelDiffThresh->AddEntry(hRelDiffThreshSplit,"Splitted","l");
 //        legRelDiffThresh->AddEntry(hRelDiffThreshWeight,"Weight","l");
         legRelDiffThresh->Draw("SAME");
         c9->Write();
@@ -2317,8 +2666,10 @@ int main(){
         hWidthThreshRec->SetLineWidth(3);
         hWidthThreshRecSel->SetLineColor(8);
         hWidthThreshRecSel->SetLineWidth(3);
-        hWidthThreshWeight->SetLineColor(40);
-        hWidthThreshWeight->SetLineWidth(3);
+//        hWidthThreshWeight->SetLineColor(40);
+//        hWidthThreshWeight->SetLineWidth(3);
+        hWidthThreshSplit->SetLineColor(40);
+        hWidthThreshSplit->SetLineWidth(3);
         hWidthThreshObs->GetYaxis()->SetRangeUser(0,1);
 
         hWidthThreshObs->GetXaxis()->SetLabelSize(0.045);
@@ -2329,12 +2680,14 @@ int main(){
         hWidthThreshObs->Draw();
         hWidthThreshUnfold->Draw("SAME");
         hWidthThreshRec->Draw("SAME");
-//        hWidthThreshRecSel->Draw("SAME");
+        hWidthThreshRecSel->Draw("SAME");
 //        hWidthThreshWeight->Draw("SAME");
+        hWidthThreshSplit->Draw("SAME");
         legWidthThresh->AddEntry(hWidthThreshObs,"Observed","l");
         legWidthThresh->AddEntry(hWidthThreshUnfold,"Unfolded","l");
-        legWidthThresh->AddEntry(hWidthThreshRec,"Reconstructed","l");
-//        legWidthThresh->AddEntry(hWidthThreshRecSel,"RecSel","l");
+        legWidthThresh->AddEntry(hWidthThreshRec,"Part. Edge Charges","l");
+        legWidthThresh->AddEntry(hWidthThreshRecSel,"Max Charge Sel.","l");
+        legWidthThresh->AddEntry(hWidthThreshSplit,"Splitted","l");
 //        legWidthThresh->AddEntry(hWidthThreshWeight,"Weight","l");
         legWidthThresh->Draw("SAME");
         c15->Write();
@@ -2348,34 +2701,43 @@ int main(){
     c3->SetLeftMargin(0.18);
     c3->SetBottomMargin(0.12);
 
-    hSimCharge->SetLineColor(8);
-    hSimCharge->SetLineWidth(3);
+    hSim1Charge->SetLineColor(8);
+    hSim1Charge->SetLineWidth(3);
+    hSim2Charge->SetLineColor(36);
+    hSim2Charge->SetLineWidth(3);
     hObsCharge->SetLineColor(1);
     hObsCharge->SetLineWidth(3);
     hUnfoldCharge->SetLineColor(38);
     hUnfoldCharge->SetLineWidth(3);
     hRecCharge->SetLineColor(46);
     hRecCharge->SetLineWidth(3);
-    hRecSelCharge->SetLineColor(8);
+    hRecSelCharge->SetLineColor(42);
     hRecSelCharge->SetLineWidth(3);
-    hSimCharge->GetYaxis()->SetTitle("#Events");
-    hSimCharge->GetXaxis()->SetTitle("Charge");
+    hSplitCharge->SetLineColor(40);
+    hSplitCharge->SetLineWidth(3);
 
-    hSimCharge->GetXaxis()->SetLabelSize(0.045);
-    hSimCharge->GetYaxis()->SetLabelSize(0.045);
-    hSimCharge->GetXaxis()->SetTitleSize(0.045);
-    hSimCharge->GetYaxis()->SetTitleSize(0.045);
+    hObsCharge->GetYaxis()->SetRangeUser(0,hSim2Charge->GetMaximum()+50);
+    hObsCharge->GetYaxis()->SetTitle("#Events");
+    hObsCharge->GetXaxis()->SetTitle("Charge");
+    hObsCharge->GetXaxis()->SetLabelSize(0.045);
+    hObsCharge->GetYaxis()->SetLabelSize(0.045);
+    hObsCharge->GetXaxis()->SetTitleSize(0.045);
+    hObsCharge->GetYaxis()->SetTitleSize(0.045);
 
-    hSimCharge->Draw();
-    hObsCharge->Draw("SAME");
+    hObsCharge->Draw();
     hUnfoldCharge->Draw("SAME");
     hRecCharge->Draw("SAME");
-//    hRecSelCharge->Draw("SAME");
-    leg4->AddEntry(hSimCharge,"Simulated","l");
+    hRecSelCharge->Draw("SAME");
+    hSplitCharge->Draw("SAME");
+    hSim1Charge->Draw("SAME");
+    hSim2Charge->Draw("SAME");
     leg4->AddEntry(hObsCharge,"Observed","l");
     leg4->AddEntry(hUnfoldCharge,"Unfolded","l");
-    leg4->AddEntry(hRecCharge,"Reconstructed","l");
-//    leg4->AddEntry(hRecSelCharge,"RecSel","l");
+    leg4->AddEntry(hRecCharge,"Part. Edge Charges","l");
+    leg4->AddEntry(hRecSelCharge,"Max Charge Sel.","l");
+    leg4->AddEntry(hSplitCharge,"Splitted","l");
+    leg4->AddEntry(hSim1Charge,"Simulated (hit1)","l");
+    leg4->AddEntry(hSim2Charge,"Simulated (hit2)","l");
     leg4->Draw("SAME");
     c3->Write();
     c3->SaveAs((plotDir+"Charge.pdf").c_str());
@@ -2437,8 +2799,10 @@ int main(){
     hRelDiffRec->SetLineWidth(3);
     hRelDiffRecSel->SetLineColor(8);
     hRelDiffRecSel->SetLineWidth(3);
-    hRelDiffWeight->SetLineColor(40);
-    hRelDiffWeight->SetLineWidth(3);
+//    hRelDiffWeight->SetLineColor(40);
+//    hRelDiffWeight->SetLineWidth(3);
+    hRelDiffSplit->SetLineColor(40);
+    hRelDiffSplit->SetLineWidth(3);
 
     hRelDiffObs->GetXaxis()->SetLabelSize(0.045);
     hRelDiffObs->GetYaxis()->SetLabelSize(0.045);
@@ -2448,12 +2812,14 @@ int main(){
     hRelDiffObs->Draw();
     hRelDiffUnfold->Draw("SAME");
     hRelDiffRec->Draw("SAME");
-//    hRelDiffRecSel->Draw("SAME");
+    hRelDiffRecSel->Draw("SAME");
 //    hRelDiffWeight->Draw("SAME");
+    hRelDiffSplit->Draw("SAME");
     legRelDiff->AddEntry(hRelDiffObs,"Observed","l");
     legRelDiff->AddEntry(hRelDiffUnfold,"Unfolded","l");
-    legRelDiff->AddEntry(hRelDiffRec,"Reconstructed","l");
-//    legRelDiff->AddEntry(hRelDiffRecSel,"RecSel","l");
+    legRelDiff->AddEntry(hRelDiffRec,"Part. Edge Charges","l");
+    legRelDiff->AddEntry(hRelDiffRecSel,"Max Charge Sel.","l");
+    legRelDiff->AddEntry(hRelDiffSplit,"Splitted","l");
 //    legRelDiff->AddEntry(hRelDiffWeight,"Weight","l");
     legRelDiff->Draw("SAME");
     c2->Write();

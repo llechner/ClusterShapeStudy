@@ -115,6 +115,7 @@ double UncertaintyCrossTalk(double x0, double s0, double x1, double x2){
 }
 
 vector<double> Threshold(vector<double> Q, double clusterThreshold){
+    // return charge vector where charges below threshold are set to 0 (for later cutting)
     std::vector<double> QThreshold;
     for(unsigned int i=0;i<Q.size();i++){
         if(Q[i]>clusterThreshold){
@@ -166,6 +167,7 @@ vector<vector<double>> Cutting(vector<double> Q){
 }
 
 vector<double> SelectionAfterCutting(vector<vector<double>> Cluster){
+    // Select cluster with max charge
     std::vector<double> Interm;
     Interm.reserve(Cluster.size());
 
@@ -177,7 +179,7 @@ vector<double> SelectionAfterCutting(vector<vector<double>> Cluster){
 }
 
 vector<double> ClusterizationWithNoise(vector<double> UnderCluster, double QStrip, double RelDiffQStrip){
-
+    // Set noise bins to 0, cut clusters and select the one with largest charge
     if(UnderCluster.size()<4){
         return UnderCluster;
     }
